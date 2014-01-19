@@ -28,9 +28,8 @@ function virtualenv_info {
 
 function git-prompt-info {
 	[ $(git-current-branch) ] || return
-	pi=""
-	git-is-dirty || pi="%{${RED}%}?%{${RESET}%}"
-	git-is-ahead || pi="${pi}%{${RESET}%}!%{${RESET}%}"
+	git-is-dirty || pi="${pi}%{${RED}%}?%{${RESET}%}"
+	git-is-ahead || pi="${pi}%{${RED}%}!%{${RESET}%}"
 	echo "%{${RESET}%}%{${GREEN}%}$(current_branch)%{${RESET}%}${pi}"
 }
 
