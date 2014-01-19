@@ -1,0 +1,51 @@
+#!/bin/bash
+# custom wine prefix launcher
+function xHelp {
+	echo "Usage: $(basename $0) <prefix> [[nw ]command]"
+	echo "'command' defaults to 'wineboot'."
+	echo "If the first word of 'command' is 'nw', the command is not executed through WINE."
+	echo "If the specified prefix does not exist, it will be created with the architecture specified in the environment variable 'WINEARCH'."
+	echo 
+	echo "Examples:"
+	echo "	$(basename $0) testprefix winecfg"
+	echo "	$(basename $0) testprefix nw winetricks dotnet20"
+}
+
+# display help if we don't have a prefix
+if [[ $# -lt 1 ]]; then xHelp; exit 1; fi
+# or if our first param is "-h" or "--help"
+if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then xHelp; exit 0; fi
+
+NOWINE=0
+PREFIX=$1; shift
+if [[ $# -eq 0 ]]; then
+	COMMAND="wineboot"
+else
+	if [[ "$1" -eq "nw" ]]; then
+		NOWINE=1
+		shift
+	fi
+	COMMAND=$@
+fi
+
+export WINEPREFIX="$HOME/.wine/prefix/$PREFIX"
+if [[ ! -d "$WINEPREFIX" ]]; then
+	# prefix dir doesn't exist
+	echo "Creating new prefix..."
+	wineboot
+fi
+
+# get the prefix arch
+WINEARCH="win32"
+if [[ -d "$WINEPREFIX/drive_c/Program Files (x86)" ]]; then
+	WINEARCH="win64"
+fi
+
+export WINEARCH
+
+# start wine
+if [[ $NOWINE -eq 1 ]]; then
+	$COMMAND
+else
+	wine "$COMMAND"
+fi
