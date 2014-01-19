@@ -26,10 +26,12 @@ function virtualenv_info {
 	[ $VIRTUAL_ENV ] && echo "%{${RESET}%}(%{${BLUE}%}$(basename $VIRTUAL_ENV)%{${RESET}%})"
 }
 
-function git_prompt_info {
-	[ $(current_branch) ] || return
-	pc="${GREEN}"; git_is_dirty || pc="${MAGENTA}"
-	echo "%{${RESET}%}%{${pc}%}$(current_branch)%{${RESET}%}"
+function git-prompt-info {
+	[ $(git-current-branch) ] || return
+	pi=""
+	git-is-dirty || pi="%{${RED}%}?%{${RESET}%}"
+	git-is-ahead || pi="${pi}%{%{RESET}%}!%{${RESET}%}"
+	echo "%{${RESET}%}%{${GREEN}%}$(current_branch)%{${RESET}%}${pi}"
 }
 
 function make_prompt {
@@ -38,7 +40,7 @@ function make_prompt {
 	# in <dir>
 	p="${p} in %{${CYAN}%}${PWD/#$HOME/~}%{${RESET}%}"
 	# git prompt (if applicable)
-	nc="$(git_prompt_info)"
+	nc="$(git-prompt-info)"
 	[ "${nc}" ] && p="${p} %{${RESET}%}on ${nc}"
 	# newline + prompt
 	p="${p}\n%{${YELLOW}%}$(prompt_char)%{${RESET}%} "
