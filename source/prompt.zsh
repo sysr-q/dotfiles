@@ -30,7 +30,7 @@ function git-prompt-info {
 	[ $(git-current-branch) ] || return
 	git-is-dirty || pi="${pi}%{${RED}%}?%{${RESET}%}"
 	git-is-ahead || pi="${pi}%{${RED}%}!%{${RESET}%}"
-	echo "%{${RESET}%}%{${GREEN}%}$(current_branch)%{${RESET}%}${pi}"
+	echo "%{${RESET}%}%{${GREEN}%}$(git-current-branch)%{${RESET}%}${pi}"
 }
 
 function make_prompt {
