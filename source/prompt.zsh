@@ -8,11 +8,11 @@ eval RESET='$reset_color'
 function precmd {
 	# Set the title to: user@host: ~/cur/dir
 	print -Pn "\e]0;%n@%m: %~\a"
-	PROMPT=$(make_prompt)
-	RPROMPT="$(virtualenv_info) %*"
+	PROMPT=$(make-prompt)
+	RPROMPT="$(virtualenv-info) %*"
 }
 
-function prompt_char {
+function prompt-char {
 	git branch >/dev/null 2>/dev/null && print '±' && return
 	# if svn branch: '§' (no idea how2svn)
 	if [[ $(whoami) == "root" ]]; then
@@ -22,18 +22,11 @@ function prompt_char {
 	fi
 }
 
-function virtualenv_info {
+function virtualenv-info {
 	[ $VIRTUAL_ENV ] && echo "%{${RESET}%}(%{${BLUE}%}$(basename $VIRTUAL_ENV)%{${RESET}%})"
 }
 
-function git-prompt-info {
-	[ $(git-current-branch) ] || return
-	git-is-dirty || pi="${pi}%{${RED}%}?%{${RESET}%}"
-	git-is-ahead || pi="${pi}%{${RED}%}!%{${RESET}%}"
-	echo "%{${RESET}%}%{${GREEN}%}$(git-current-branch)%{${RESET}%}${pi}"
-}
-
-function make_prompt {
+function make-prompt {
 	# <user> at <host>
 	p="%{${NCOLOR}%}%n%{${RESET}%} at %{${YELLOW}%}%m%{${RESET}%}"
 	# in <dir>
@@ -42,7 +35,7 @@ function make_prompt {
 	nc="$(git-prompt-info)"
 	[ "${nc}" ] && p="${p} %{${RESET}%}on ${nc}"
 	# newline + prompt
-	p="${p}\n%{${YELLOW}%}$(prompt_char)%{${RESET}%} "
+	p="${p}\n%{${YELLOW}%}$(prompt-char)%{${RESET}%} "
 	echo $p
 }
 
@@ -51,4 +44,3 @@ if [[ $(whoami) == "root" ]]; then
 else
 	NCOLOR=${GREEN};
 fi
-

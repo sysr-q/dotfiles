@@ -18,3 +18,10 @@ function git-is-ahead() {
 	brinfo=$(git branch -v | grep $(git-current-branch))
 	return $(echo "$brinfo" | egrep "\[ahead ([[:digit:]]*)\]" | wc -l)
 }
+
+function git-prompt-info {
+	[ $(git-current-branch) ] || return
+	git-is-dirty || pi="${pi}%{${RED}%}?%{${RESET}%}"
+	git-is-ahead || pi="${pi}%{${RED}%}!%{${RESET}%}"
+	echo "%{${RESET}%}%{${GREEN}%}$(git-current-branch)%{${RESET}%}${pi}"
+}
