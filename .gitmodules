@@ -4,3 +4,9 @@
 [submodule "link/.vim/bundle/vim-airline"]
 	path = link/.vim/bundle/vim-airline
 	url = https://github.com/bling/vim-airline.git
+[submodule "awesome: assault"]
+	path = link/.config/awesome/assault
+	url = git://github.com/NuckChorris/assault.git
+[submodule "awesome: pulseaudio"]
+	path = link/.config/awesome/pulse
+	url = https://gist.github.com/7018116.git
