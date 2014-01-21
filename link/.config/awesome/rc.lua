@@ -128,8 +128,6 @@ for s = 1, screen.count() do
   right_layout:add(widgets.spacer)
   if s == 1 then right_layout:add(wibox.widget.systray()) end
   right_layout:add(widgets.spacer)
-  right_layout:add(widgets.all.np)
-  right_layout:add(widgets.spacer)
   right_layout:add(widgets.all.volume)
   right_layout:add(widgets.spacer)
   right_layout:add(widgets.all.clock)
