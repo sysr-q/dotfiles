@@ -5,7 +5,7 @@ local theme = {}
 theme.name = "smyck"
 theme.root = awful.util.getdir("config") .. "/themes/" .. theme.name .. "/"
 
-theme.font          = "M+ 1p normal 9"
+theme.font          = "sans 8"
 
 theme.bg_normal     = "#1b1b1b"
 theme.bg_focus      = "#5d5d5d"
