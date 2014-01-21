@@ -219,7 +219,7 @@ globalkeys = awful.util.table.join(
                 awful.util.getdir("cache") .. "/history_eval")
             end),
   -- Menubar
-  awful.key({ modkey }, "p", function() menubar.show() end)
+  awful.key({ modkey }, "p", function() menubar.show() end),
 
   -- Volume keys
   awful.key({}, "#123", function()
