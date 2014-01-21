@@ -28,7 +28,7 @@ theme.border_marked = theme.bg_minimize
 theme.taglist_squares_sel   = "/usr/share/awesome/themes/default/taglist/squarefw.png"
 theme.taglist_squares_unsel = "/usr/share/awesome/themes/default/taglist/squarew.png"
 
-theme.wallpaper = home .. "Pictures/WiP/cg-allison.png"
+theme.wallpaper = "/usr/share/awesome/themes/default/background.png"
 
 -- Layout icons
 theme.layout_floating   = theme.root .. "layouts/floating.svg"
