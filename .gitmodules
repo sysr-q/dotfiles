@@ -10,3 +10,6 @@
 [submodule "awesome: pulseaudio"]
 	path = link/.config/awesome/pulse
 	url = https://gist.github.com/7018116.git
+[submodule "vim: solarized"]
+	path = link/.vim/bundle/vim-colors-solarized
+	url = https://github.com/altercation/vim-colors-solarized
