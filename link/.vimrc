@@ -12,8 +12,9 @@ set number
 set cindent
 set tabstop=4
 set shiftwidth=4
+set cc=80
 
-nnoremap <A-j> :m .+1<CR>==
-nnoremap <A-k> :m .-2<CR>==
+nnoremap <A-j> :m .+1
+nnoremap <A-k> :m .-2
 inoremap <A-j> <Esc>:m .+1<CR>==gi
 inoremap <A-k> <Esc>:m .-2<CR>==gi
