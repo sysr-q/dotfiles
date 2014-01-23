@@ -14,6 +14,7 @@ set cindent
 set tabstop=4
 set shiftwidth=4
 set cc=80
+set cursorline
 
 nnoremap <A-j> :m .+1
 nnoremap <A-k> :m .-2
