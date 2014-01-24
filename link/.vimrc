@@ -16,7 +16,4 @@ set shiftwidth=4
 set cc=80
 set cursorline
 
-nnoremap <A-j> :m .+1
-nnoremap <A-k> :m .-2
-inoremap <A-j> <Esc>:m .+1<CR>==gi
-inoremap <A-k> <Esc>:m .-2<CR>==gi
+map <C-n> <plug>NERDTreeTabsToggle<CR>
