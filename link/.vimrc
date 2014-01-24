@@ -16,4 +16,4 @@ set shiftwidth=4
 set cc=80
 set cursorline
 
-map <C-n> <plug>NERDTreeTabsToggle<CR>
+map <C-n> <plug>NERDTreeToggle<CR>
