@@ -8,6 +8,7 @@ let g:airline#extensions#tabline#enabled = 1
 syntax enable
 set background=dark
 colorscheme solarized
+highlight clear SignColumn
 
 set number
 set tabstop=4
