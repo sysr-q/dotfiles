@@ -10,10 +10,10 @@ set background=dark
 colorscheme solarized
 
 set number
-set cindent
 set tabstop=4
 set shiftwidth=4
 set cc=80
 set cursorline
 
 map <C-n> :NERDTreeToggle<CR>
+map <C-m> :GitGutterToggle<CR>
