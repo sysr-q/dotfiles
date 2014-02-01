@@ -315,6 +315,8 @@ awful.rules.rules = {
     properties = { floating = true } },
   { rule = { class = "gimp" },
     properties = { floating = true } },
+  { rule = { class = "Pidgin" },
+    properties = { floating = true } },
 }
 -- }}}
 
