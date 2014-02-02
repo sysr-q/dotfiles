@@ -317,6 +317,8 @@ awful.rules.rules = {
     properties = { floating = true } },
   { rule = { class = "Pidgin" },
     properties = { floating = true } },
+  { rule = { class = "Steam" },
+    properties = { floating = true } },
 }
 -- }}}
 
