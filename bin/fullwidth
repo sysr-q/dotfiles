@@ -1,0 +1,9 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import sys
+stdin = u" ".join(sys.argv[1:]).upper()
+trans = u"AＡBＢCＣDＤEＥFＦGＧHＨIＩJＪKＫLＬMＭNＮOＯPＰQＱRＲSＳTＴUＵVＶWＷXＸYＹZＺ[【]】\＼/／"
+tranz = zip(trans[::2], trans[1::2])
+for old, new in tranz:
+	stdin = stdin.replace(old, new)
+print(stdin)
