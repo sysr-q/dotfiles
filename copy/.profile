@@ -1,4 +1,5 @@
 GOPATH="$HOME/go"
+GOBIN="$GOPATH/bin"
 PATH="$HOME/.dotfiles/bin:$GOPATH/bin:$PATH:$HOME/blog:$HOME/.local/bin"
 EDITOR="vim"
 BROWSER="firefox"
