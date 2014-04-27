@@ -25,3 +25,6 @@
 [submodule "vim: vim-less"]
 	path = link/.vim/bundle/vim-less
 	url = https://github.com/groenewege/vim-less
+[submodule "vim: vim-go"]
+	path = link/.vim/bundle/vim-go
+	url = https://github.com/fatih/vim-go
