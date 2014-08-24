@@ -18,3 +18,5 @@ set cursorline
 
 map <C-n> :NERDTreeToggle<CR>
 map <C-m> :GitGutterToggle<CR>
+
+set modeline

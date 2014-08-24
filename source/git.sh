@@ -1,13 +1,13 @@
 function git-current-branch() {
-    ref=$(git symbolic-ref HEAD 2> /dev/null) || \
-    ref=$(git rev-parse --short HEAD 2> /dev/null) || return
-    echo ${ref#refs/heads/}
+	ref=$(git symbolic-ref HEAD 2> /dev/null) || \
+	ref=$(git rev-parse --short HEAD 2> /dev/null) || return
+	echo ${ref#refs/heads/}
 }
 
 function git-current-repository() {
-    ref=$(git symbolic-ref HEAD 2> /dev/null) || \
-    ref=$(git rev-parse --short HEAD 2> /dev/null) || return
-    echo $(git remote -v | cut -d':' -f 2)
+	ref=$(git symbolic-ref HEAD 2> /dev/null) || \
+	ref=$(git rev-parse --short HEAD 2> /dev/null) || return
+	echo $(git remote -v | cut -d':' -f 2)
 }
 
 function git-is-dirty() {
@@ -21,7 +21,8 @@ function git-is-ahead() {
 
 function git-prompt-info {
 	[ $(git-current-branch) ] || return
-	git-is-dirty || pi="${pi}%{${RED}%}?%{${RESET}%}"
-	git-is-ahead || pi="${pi}%{${RED}%}!%{${RESET}%}"
-	echo "%{${RESET}%}%{${GREEN}%}$(git-current-branch)%{${RESET}%}${pi}"
+	# This is managed in $(make-prompt) now.
+	# git-is-dirty || pi="${pi}%{${RED}%}?"
+	# git-is-ahead || pi="${pi}%{${RED}%}!"
+	echo "$(git-current-branch)${pi}"
 }
