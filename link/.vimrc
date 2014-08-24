@@ -24,3 +24,5 @@ set tabstop=4
 set shiftwidth=4
 set cc=80
 set cursorline
+
+set modeline
