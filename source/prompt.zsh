@@ -31,10 +31,9 @@ function virtualenv-info {
 function make-prompt {
 	SEP=$(echo -en '\uE0B0')
 	SEPT=$(echo -en '\uE0B1')
-	#echo "${BLUEBG}${BLUE} %m ${RESET}${BLUE}${separator}$RESET$(prompt-char) "
 	PWD=$(pwd | sed -e "s#^$HOME#~#")
 	# user@host >
-	echo -n "${CYANBG}${BLACK} %n@%m ${RESET}${BLACKBG}${SEP}"
+	echo -n "${CYANBG}${BLACK} %n@%m ${RESET}${CYAN}${SEP}"
 	# > ~/foo/bar >
 	echo -n "${BLACKBG}${WHITE} ${PWD} "
 	# > master >
