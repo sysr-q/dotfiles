@@ -33,7 +33,7 @@ function make-prompt {
 	SEPT=$(echo -en '\uE0B1')
 	PWD=$(pwd | sed -e "s#^$HOME#~#")
 	# user@host >
-	echo -n "${CYANBG}${BLACK} %n@%m ${RESET}${CYAN}${SEP}"
+	echo -n "${CYANBG}${BLACK} %n@%m ${RESET}${BLACKBG}${CYAN}${SEP}"
 	# > ~/foo/bar >
 	echo -n "${BLACKBG}${WHITE} ${PWD} "
 	# > master >
