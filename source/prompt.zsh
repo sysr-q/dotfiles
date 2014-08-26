@@ -42,9 +42,12 @@ function make-prompt {
 		FG="${GREEN}"
 		git-is-dirty || BG="${REDBG}"
 		git-is-dirty || FG="${RED}"
-		git-is-ahead || BG="${REDBG}"
-		git-is-ahead || FG="${RED}"
+		[ git-is-ahead ] &&\
+		echo -n "${MAGENTABG}${BLACK}${SEP}${BG}${MAGENTA}${SEP}" ||\
 		echo -n "${BG}${BLACK}${SEP}"
+		# git-is-ahead || BG="${REDBG}"
+		# git-is-ahead || FG="${RED}"
+		# echo -n "${BG}${MAGENTA}${SEP}"
 		echo -n "${BG}${WHITE} $(git-prompt-info) ${RESET}${FG}${SEP}${RESET} "
 	else
 		echo -n "${RESET}${BLACK}${SEP}${RESET} "
