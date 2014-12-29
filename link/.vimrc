@@ -5,6 +5,8 @@ let mapleader = ","
 map <C-n> :NERDTreeToggle<CR>
 map <C-m> :GitGutterToggle<CR>
 
+let NERDTreeIgnore = ['\.pyc$']
+
 set laststatus=2
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
@@ -24,5 +26,6 @@ set tabstop=4
 set shiftwidth=4
 set cc=80
 set cursorline
+set hidden
 
 set modeline
