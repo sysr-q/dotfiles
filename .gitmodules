@@ -28,3 +28,6 @@
 [submodule "vim: vim-go"]
 	path = link/.vim/bundle/vim-go
 	url = https://github.com/fatih/vim-go
+[submodule "vim: vim-hackernews"]
+	path = link/.vim/bundle/vim-hackernews
+	url = git://github.com/ryanss/vim-hackernews.git
