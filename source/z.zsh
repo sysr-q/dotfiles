@@ -48,3 +48,5 @@ zstyle ':completion:*:warnings' format '%BSorry, no matches for: %d%b'
 # misc stuff
 setopt autocd
 setopt extendedglob
+setopt correct
+setopt noclobber  # because I'm dumb
