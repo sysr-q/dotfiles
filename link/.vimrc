@@ -5,7 +5,7 @@ let mapleader = ","
 map <C-n> :NERDTreeToggle<CR>
 map <C-m> :GitGutterToggle<CR>
 
-let NERDTreeIgnore = ['\.pyc$']
+let NERDTreeIgnore = ['\.pyc$', '__pycache__$']
 
 set laststatus=2
 let g:airline_powerline_fonts = 1
