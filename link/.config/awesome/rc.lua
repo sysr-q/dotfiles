@@ -12,6 +12,7 @@ local capi = { timer = timer }
 home = (os.getenv("HOME") .. "/") or ""
 theme_name = "smyck"
 terminal = "termite"
+locker = "light-locker-command -l"
 modkey = "Mod4"
 
 -- {{{ Error handling
@@ -216,7 +217,7 @@ globalkeys = awful.util.table.join(
                 awful.util.getdir("cache") .. "/history_eval")
             end),
   -- Menubar
-  awful.key({ modkey }, "p", function() menubar.show() end),
+  awful.key({ modkey }, "p", function() awful.util.spawn(locker) end),
 
   -- Volume keys
   awful.key({}, "#123", function()
