@@ -31,3 +31,6 @@
 [submodule "vim: vim-hackernews"]
 	path = link/.vim/bundle/vim-hackernews
 	url = git://github.com/ryanss/vim-hackernews.git
+[submodule "vim: drawit"]
+	path = link/.vim/bundle/vim-drawit
+	url = git://github.com/vim-scripts/DrawIt.git
