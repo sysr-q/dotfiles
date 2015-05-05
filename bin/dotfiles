@@ -2,15 +2,12 @@
 # script to update dotfiles and everything else
 # inspired by https://github.com/cowboy/dotfiles
 
-# default options {{{
 PRETEND=0
 FORCE=0
 VERBOSE=0
-GIT_URL="git@github.com:plausibility/dotfiles.git"
+GIT_URL="git://github.com/sysr-q/dotfiles.git"
 ACTIONS="update link copy test"
-# }}}
 
-# usage info {{{
 function usage() {
 	cat << EOF
 Usage: $1 [-h] [-P] [-F] [-v] [-g <git_url>] [-a <actions>]
@@ -27,9 +24,7 @@ Options:
                   Default is "$ACTIONS".
 EOF
 } # '
-# }}}
 
-# helpers {{{
 # display helpers
 function e_header()  { echo -e "\n\033[1m$@\033[0m"; }
 function e_success() { echo -e " \033[0;32m✔\033[0m $@"; }
@@ -49,24 +44,16 @@ function p_call() {
 	[[ $PRETEND -eq 1 ]] || "$@"
 }
 
-# }}}
-
-# action definitions {{{
 # actions should be functions  with names that start with 'action_'
 # actions that should be executed by default should have their names
 # (minus 'action_') added to the ACTIONS list at the top of this file
-#
-# as long as 'update' is the first action in the list, actions will have
-# access to the $new_install variable, which will be 1 if the dotfiles have
-# not been installed on this machine before
 
 function action_update() {
 	if [[ ! -d "$HOME/.dotfiles" ]] || [[ $FORCE -eq 1 ]]; then
 		# dotfiles dir doesnt't exist (or we're being forced to recreate it)
 		[[ $FORCE -eq 1 ]] && p_call rm -rf "$HOME/.dotfiles"
-		new_install=1
 		e_header "Cloning dotfiles repository..."
-		p_call git clone --recursive "$GIT_URL" "$HOME/.dotfiles"
+		p_call git clone --recursive "$GIT_URL" "$HOME/.dotfiles" 2>/dev/null
 	else
 		# dotfiles dir exists, check if it's a git repo
 		cd "$HOME/.dotfiles"
@@ -74,7 +61,7 @@ function action_update() {
 			# it's a git repo
 			e_header "Updating ~/.dotfiles..."
 			p_call git pull
-			p_call git submodule update --init --recursive --quiet
+			p_call git submodule update --init --recursive --quiet 2>/dev/null
 		else
 			# it's not a git repo
 			e_error "~/.dotfiles is not a Git repository, can't update it."
@@ -82,14 +69,14 @@ function action_update() {
 		fi
 	fi
 	cd "$HOME/.dotfiles"
-	e_success "Updating dotfiles successful (Git commit: $(git rev-parse --short HEAD))"
+	e_success "Updating dotfiles successful (commit: $(git rev-parse --short HEAD))"
 }
 
 function action_link() {
 	e_header "Linking..."
 	e_arrow "Processing files in $HOME/.dotfiles/link"
 	for fn in $(p_find "$HOME/.dotfiles/link/" f); do
-		[[ -e "$HOME/$fn" ]] && rm -rf "$HOME/$fn"
+		[[ -e "$HOME/$fn" ]] && p_call rm -rf "$HOME/$fn"
 		p_call ln -fs "$HOME/.dotfiles/link/$fn" "$HOME/$fn"
 		tmp_ret="$?"
 		if [[ "$tmp_ret" -ne 0 ]]; then
@@ -100,8 +87,9 @@ function action_link() {
 	# handle directories
 	for dir in $(p_find "$HOME/.dotfiles/link/" d); do
 		e_arrow "Processing files in $HOME/.dotfiles/link/$dir"
+		p_call mkdir -p "$HOME/$dir"
 		for fn in $(p_find "$HOME/.dotfiles/link/$dir"); do
-			[[ -e "$HOME/$dir/$fn" ]] && rm -rf "$HOME/$dir/$fn"
+			[[ -e "$HOME/$dir/$fn" ]] && p_call rm -rf "$HOME/$dir/$fn"
 			p_call ln -fs "$HOME/.dotfiles/link/$dir/$fn" "$HOME/$dir/$fn"
 			tmp_ret="$?"
 			if [[ "$tmp_ret" -ne 0 ]]; then
@@ -109,6 +97,8 @@ function action_link() {
 				return 1
 			fi
 		done
+		# Blank line.
+		echo
 	done
 	e_success "Linking successful!"
 }
@@ -138,7 +128,7 @@ function action_test() {
 	fi
 
 	e_arrow "Testing shell sourcing..."
-	bash_source="$(bash -c "source \"$HOME/.bashrc\" && echo \$DOTFILES_SOURCED")"
+	bash_source="$(env -i bash -c "source \"$HOME/.bashrc\" && echo \$DOTFILES_SOURCED")"
 	if [[ "$bash_source" == '1' ]]; then
 		e_success "bash sources \"~/.dotfiles/source\""
 	else
@@ -147,7 +137,7 @@ function action_test() {
 		e_arrow "source \"\$HOME/.dotfiles/lib/source.sh\""
 	fi
 
-	zsh_source="$(zsh -c "source \"$HOME/.zshrc\" && echo \$DOTFILES_SOURCED")"
+	zsh_source="$(env -i zsh -c "source \"$HOME/.zshrc\" && echo \$DOTFILES_SOURCED")"
 	if [[ "$zsh_source" == '1' ]]; then
 		e_success "zsh sources \"~/.dotfiles/source\""
 	else
@@ -156,9 +146,7 @@ function action_test() {
 		e_arrow "source \"\$HOME/.dotfiles/lib/source.sh\""
 	fi
 }
-# }}}
 
-# option processing {{{
 while getopts "hPFvg:a:" OPTION; do
 	case "$OPTION" in
 		h)
@@ -183,9 +171,8 @@ while getopts "hPFvg:a:" OPTION; do
 			;;
 	esac
 done
-# }}}
 
-# launching the actions in $ACTIONS {{{
+# launching the actions in $ACTIONS
 for action in $ACTIONS; do
 	if declare -f "action_$action" >/dev/null; then
 		"action_$action"; tmp_ret="$?"
@@ -200,4 +187,3 @@ for action in $ACTIONS; do
 	fi
 done
 echo
-# }}}
