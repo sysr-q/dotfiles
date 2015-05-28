@@ -1,6 +1,6 @@
 export GOPATH="$HOME/go"
 export GOBIN="$GOPATH/bin"
-export PATH="$HOME/.dotfiles/bin:$GOPATH/bin:$PATH:$HOME/blog:$HOME/.local/bin"
+export PATH="$HOME/.dotfiles/bin:$GOBIN:$HOME/.local/bin:$PATH"
 export EDITOR="vim"
 export BROWSER="chromium"
 # Bad? Bad. Makes mosh work though.
