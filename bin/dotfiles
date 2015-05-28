@@ -118,7 +118,7 @@ function action_test() {
 	e_header "Testing configuration..."
 
 	e_arrow "Testing \$PATH..."
-	has_path="$(bash -c "source \"$HOME/.profile\" && if [[ \":$PATH:\" == *\":$HOME/.dotfiles/bin\"* ]]; then echo 1; else echo 0; fi")"
+	has_path="$(env -i bash -c "source \"$HOME/.profile\" && if [[ \":$PATH:\" == *\":$HOME/.dotfiles/bin\"* ]]; then echo 1; else echo 0; fi")"
 	if [[ "$has_path" == '1' ]]; then
 		e_success "\$PATH contains \"~/.dotfiles/bin\""
 	else
