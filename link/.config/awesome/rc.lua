@@ -12,7 +12,7 @@ local capi = { timer = timer }
 home = (os.getenv("HOME") .. "/") or ""
 theme_name = "smyck"
 terminal = "termite"
-locker = "light-locker-command -l"
+locker = "dm-tool lock"
 modkey = "Mod4"
 
 -- {{{ Error handling
