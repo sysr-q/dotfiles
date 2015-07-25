@@ -50,4 +50,6 @@ zstyle ':completion:*:warnings' format '%BSorry, no matches for: %d%b'
 setopt autocd
 setopt extendedglob
 setopt correct
+setopt correctall
 setopt noclobber  # because I'm dumb
+setopt rmstarwait # again, because I'm dumb
