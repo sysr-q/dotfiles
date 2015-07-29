@@ -1,9 +1,12 @@
 runtime bundle/vim-pathogen/autoload/pathogen.vim
 execute pathogen#infect()
 
+set nocompatible
+
 let mapleader = ","
 map <C-n> :NERDTreeToggle<CR>
 map <C-m> :GitGutterToggle<CR>
+nnoremap ; :
 
 let NERDTreeIgnore = ['\.pyc$', '__pycache__$']
 
@@ -22,18 +25,35 @@ colorscheme solarized
 highlight clear SignColumn
 
 set number
+set scrolloff=10
+
 set tabstop=4
 set shiftwidth=4
+
 set cc=80
 set cursorline
 set hidden
 
 set modeline
+set shortmess+=I
+set smartcase
+set splitbelow
+set splitright
 
 au VimEnter * RainbowParenthesesToggle
 au Syntax * RainbowParenthesesLoadRound
 au Syntax * RainbowParenthesesLoadSquare
 au Syntax * RainbowParenthesesLoadBraces
 
+" neovim annoyances
 set mouse=
+
+set timeout
+set timeoutlen=750
 set ttimeoutlen=250
+
+"NeoVim handles ESC keys as alt+key, set this to solve the problem
+if has('nvim')
+	set ttimeout
+	set ttimeoutlen=0
+endif
