@@ -1,0 +1,99 @@
+# Part of the "sysrq dotfiles experience". Available at:
+#    sysrq <chris@gibsonsec.org> https://gitlab.com/sysrq/dotfiles
+#
+# This is free and unencumbered software released into the public domain.
+#
+# Anyone is free to copy, modify, publish, use, compile, sell, or
+# distribute this software, either in source code form or as a compiled
+# binary, for any purpose, commercial or non-commercial, and by any
+# means.
+#
+# In jurisdictions that recognize copyright laws, the author or authors
+# of this software dedicate any and all copyright interest in the
+# software to the public domain. We make this dedication for the benefit
+# of the public at large and to the detriment of our heirs and
+# successors. We intend this dedication to be an overt act of
+# relinquishment in perpetuity of all present and future rights to this
+# software under copyright law.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+#
+# For more information, please refer to <http://unlicense.org>
+
+autoload colors && colors
+for COLOR in RED GREEN YELLOW BLUE MAGENTA CYAN BLACK WHITE; do
+	eval $COLOR='%{$fg_no_bold[${(L)COLOR}]%}'
+	eval BOLD_$COLOR='%{$fg_bold[${(L)COLOR}]%}'
+	eval ${COLOR}BG='%{$bg_no_bold[${(L)COLOR}]%}'
+	eval BOLD_${COLOR}BG='%{$bg_bold[${(L)COLOR}]%}'
+done
+eval RESET='%{$reset_color%}'
+
+# TODO: Replace these with @cyphar's superior file-based one.
+function git-current-branch() {
+	ref=$(git symbolic-ref HEAD 2> /dev/null) || \
+	ref=$(git rev-parse --short HEAD 2> /dev/null) || return
+	echo ${ref#refs/heads/}
+}
+
+function git-current-repository() {
+	ref=$(git symbolic-ref HEAD 2> /dev/null) || \
+	ref=$(git rev-parse --short HEAD 2> /dev/null) || return
+	echo $(git remote -v | cut -d':' -f 2)
+}
+
+function git-is-dirty() {
+	return $(git status --porcelain | wc -l)
+}
+
+function git-is-ahead() {
+	brinfo=$(git branch -v | grep $(git-current-branch))
+	return $(echo "$brinfo" | egrep "\[ahead ([[:digit:]]*)\]" | wc -l)
+}
+
+function git-prompt-info {
+	[ $(git-current-branch) ] || return
+	echo "$(git-current-branch)${pi}"
+}
+# XXX: Replace above
+
+function virtualenv-info {
+	[ $VIRTUAL_ENV ] && echo "%{${RESET}%}(%{${BLUE}%}$(basename $VIRTUAL_ENV)%{${RESET}%})"
+}
+
+function make-prompt {
+	SEP=$(echo -en '\uE0B0')
+	SEPT=$(echo -en '\uE0B1')
+	PWD=$(pwd | sed -e "s#^$HOME#~#")
+	# user@host >
+	echo -n "${CYANBG}${BLACK} %n@%m ${RESET}${BLACKBG}${CYAN}${SEP}"
+	# > ~/foo/bar >
+	echo -n "${BLACKBG}${WHITE} ${PWD} "
+	# > master >
+	if [[ $(git-current-branch) != "" ]]; then
+		BG="${GREENBG}"
+		FG="${GREEN}"
+		git-is-dirty || BG="${REDBG}"
+		git-is-dirty || FG="${RED}"
+		git-is-ahead || echo -n "${BLUEBG}${BLACK}${SEP}${BG}${BLUE}${SEP}"
+		git-is-ahead && echo -n "${BG}${BLACK}${SEP}"
+		echo -n "${BG}${WHITE} $(git-prompt-info) ${RESET}${FG}${SEP}${RESET} "
+	else
+		echo -n "${RESET}${BLACK}${SEP}${RESET} "
+	fi
+}
+
+function precmd {
+	# Set the title to: user@host: ~/cur/dir
+	# print -Pn "\e]0;%n@%m: %~\a"
+	PROMPT=$(make-prompt)
+	RPROMPT="$(virtualenv-info) %*"
+}
+
+# vim: syntax=zsh
