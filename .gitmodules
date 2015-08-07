@@ -43,3 +43,6 @@
 [submodule "awesome: pulseaudio"]
 	path = config/awesome/pulse
 	url = git://gist.github.com/7018116.git
+[submodule "awesome: eminent"]
+	path = config/awesome/eminent
+	url = git://github.com/guotsuan/eminent.git

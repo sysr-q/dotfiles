@@ -2,6 +2,7 @@ local gears = require("gears")
 local awful = require("awful")
 awful.rules = require("awful.rules")
 require("awful.autofocus")
+require("eminent") -- witchcraft in a box.
 local wibox = require("wibox")
 local beautiful = require("beautiful")
 local naughty = require("naughty")
@@ -59,7 +60,7 @@ local layouts = {
 tags = {}
 for s = 1, screen.count() do
   -- Each screen has its own tag table.
-  tags[s] = awful.tag({ 1, 2, 3, 4, 5, 6, 7, 8, 9 }, s, layouts[1])
+  tags[s] = awful.tag({ 1 }, s, layouts[1]) -- 1, 2, 3, ..., 9
 end
 -- }}}
 
