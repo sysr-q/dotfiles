@@ -1,0 +1,188 @@
+#!/usr/bin/env python2
+# -*- encoding: utf-8 -*-
+# Part of the "sysrq dotfiles experience". Available at:
+#    sysrq <chris@gibsonsec.org> https://gitlab.com/sysrq/dotfiles
+#
+# This is free and unencumbered software released into the public domain.
+#
+# Anyone is free to copy, modify, publish, use, compile, sell, or
+# distribute this software, either in source code form or as a compiled
+# binary, for any purpose, commercial or non-commercial, and by any
+# means.
+#
+# In jurisdictions that recognize copyright laws, the author or authors
+# of this software dedicate any and all copyright interest in the
+# software to the public domain. We make this dedication for the benefit
+# of the public at large and to the detriment of our heirs and
+# successors. We intend this dedication to be an overt act of
+# relinquishment in perpetuity of all present and future rights to this
+# software under copyright law.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+#
+# For more information, please refer to <http://unlicense.org>
+from __future__ import print_function
+
+import argparse
+import os
+import sys
+
+try:
+    import sh
+except ImportError:
+    print("Install `sh` (pip install sh) for my sanity and yours.")
+    sys.exit(1)
+
+# # # # # # # # # #
+
+PREFIX = os.path.expanduser("~")
+
+DOTFILES = os.path.join(PREFIX, ".dotfiles")
+GIT_URL = "git@gitlab.com:sysrq/dotfiles.git"
+BRANCH = "master"
+
+CLOBBER = True
+
+# # # # # # # # # #
+
+
+class _FakeSH(object):  # Gross I know, fight me.
+    def __init__(self):
+        self.x = []
+
+    def __getattr__(self, a):
+        self.x.append(a)
+        return self
+
+    def __call__(self, *args, **kwargs):
+        x = self.x
+        a = ", ".join("%r" % r for r in args) if args else None
+        kw = (", ".join("%s=%r" % (k, v) for k, v in kwargs.items())
+              if kwargs else None)
+        _args = ", ".join(y for y in [a, kw] if y is not None)
+        self.x = []
+        _debug("%s(%s)" % (".".join(x), _args))
+        return "XXX"
+
+# # # # # # # # # #
+
+PREFIX_ERROR = " \033[0;31m✖\033[0m"
+PREFIX_SUCCESS = " \033[0;32m✔\033[0m"
+PREFIX_INFO = " \033[0;33m➜\033[0m"
+PREFIX_DEBUG = " \033[0;34m?\033[0m"
+PREFIX_HEADER = "\n\033[1m{}\033[0m"
+
+
+def _error(*args, **kwargs):
+    print(PREFIX_ERROR, *args, **kwargs)
+
+
+def _success(*args, **kwargs):
+    print(PREFIX_SUCCESS, *args, **kwargs)
+
+
+def _info(*args, **kwargs):
+    kwargs.setdefault("nr", False)
+    kwargs.setdefault("end", "" if kwargs.pop("nr") else None)
+    print(PREFIX_INFO, *args, **kwargs)
+    sys.stdout.flush()
+
+
+def _debug(*args, **kwargs):
+    print(PREFIX_DEBUG, *args, **kwargs)
+
+
+def _header(*args, **kwargs):
+    print(PREFIX_HEADER.format(" ".join(args)))
+
+
+def _success_r():
+    print("\r" + PREFIX_SUCCESS)
+
+
+def _exit(*args, **kwargs):
+    _error(*args, **kwargs)
+    sys.exit(1)
+
+# # # # # # # # # #
+
+
+def _exists(path):
+    try:
+        os.stat(path)
+    except OSError:
+        return False
+    return True
+
+# # # # # # # # # #
+
+
+def update():
+    if not _exists(DOTFILES):
+        _info("Cloning dotfiles repository...", nr=True)
+        sh.git.clone("--recursive", "--branch", BRANCH, GIT_URL, DOTFILES)
+        _success_r()
+    else:
+        if sh.git("rev-parse", "HEAD", _cwd=DOTFILES):
+            _info("Updating", DOTFILES + "...", nr=True)
+            sh.git.pull()
+            sh.git.submodule("update", "--init", "--recursive", "--quiet")
+            _success_r()
+        else:
+            _exit(DOTFILES, "is not a git repository, can't update it.")
+    commit = sh.git("rev-parse", "--short", "HEAD", _cwd=DOTFILES)
+    _info("Updating dotfiles successful (commit: %s)" % (commit.rstrip(),))
+
+
+def link():
+    for dirn in sh.find(DOTFILES,
+                        "-mindepth", 1,
+                        "-maxdepth", 2,
+                        "-type", "d",
+                        "-not", "-iwholename", "*.git*"):
+        # TODO: ln -fs $what $where
+        what = dirn.rstrip()
+        where = os.path.join(PREFIX,
+                             "." + os.path.relpath(dirn, DOTFILES)).rstrip()
+        x = "." + os.path.relpath(dirn, DOTFILES).rstrip()
+        print("ln", "-fs", what, where, x)
+
+if __name__ == "__main__":
+    p = argparse.ArgumentParser()
+    p.add_argument("-b", "--bland",
+                   dest="bland", action="store_true", default=False)
+    p.add_argument("-P", "--pretend",
+                   dest="pretend", action="store_true", default=False)
+    p.add_argument("-d", "--directory",
+                   dest="directory", type=str, default=DOTFILES)
+    p.add_argument("-g", "--git-url",
+                   dest="git_url", type=str, default=GIT_URL)
+    p.add_argument("--branch",
+                   dest="branch", type=str, default=BRANCH)
+    # TODO: -c/--clobber -nc/--no-clobber
+
+    args = p.parse_args()
+
+    if args.bland:
+        PREFIX_ERROR = "[!]"
+        PREFIX_SUCCESS = "[+]"
+        PREFIX_INFO = "[ ]"
+        PREFIX_DEBUG = "[?]"
+        PREFIX_HEADER = "-> {}"
+    if args.pretend:
+        sh = _FakeSH()
+
+    DOTFILES = args.directory
+    GIT_URL = args.git_url
+    BRANCH = args.branch
+
+    update()
+    link()
+
+# vim: syntax=python
