@@ -46,3 +46,6 @@
 [submodule "awesome: eminent"]
 	path = config/awesome/eminent
 	url = git://github.com/guotsuan/eminent.git
+[submodule "tmux: tpm"]
+	path = tmux/plugins/tpm
+	url = git://github.com/tmux-plugins/tpm

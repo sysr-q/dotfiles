@@ -1,4 +1,4 @@
-" Part of the \"sysrq dotfiles experience\". Available at:
+" Part of the "sysrq dotfiles experience". Available at:
 "    sysrq <chris@gibsonsec.org> https://gitlab.com/sysrq/dotfiles
 "
 " This is free and unencumbered software released into the public domain.
@@ -35,6 +35,10 @@ let mapleader = ","
 map <C-n> :NERDTreeToggle<CR>
 map <C-m> :GitGutterToggle<CR>
 nnoremap ; :
+" Make j/k a bit more "natural" by going down the wrapped line, not actual.
+nnoremap j gj
+nnoremap k gk
+nmap <silent> <leader>/ :nohlsearch<CR>
 
 let NERDTreeIgnore = ['\.pyc$', '__pycache__$']
 
@@ -52,36 +56,36 @@ set background=dark
 colorscheme solarized
 highlight clear SignColumn
 
-set number
-set scrolloff=10
-
+" TODO: comment these and arrange them.
 set tabstop=4
+set smartindent
 set shiftwidth=4
-
+set backspace=indent,eol,start
 set cc=80
 set cursorline
-set hidden
-
+set number
 set modeline
-set shortmess+=I
+set hidden
+set scrolloff=10
 set smartcase
 set splitbelow
 set splitright
+set shortmess+=I " I probably won't donate buddy.
+set title
 
 au VimEnter * RainbowParenthesesToggle
 au Syntax * RainbowParenthesesLoadRound
 au Syntax * RainbowParenthesesLoadSquare
 au Syntax * RainbowParenthesesLoadBraces
 
-" neovim annoyances
-set mouse=
-
+" NeoVim related stuff.
 set timeout
 set timeoutlen=750
 set ttimeoutlen=250
 
-"NeoVim handles ESC keys as alt+key, set this to solve the problem
+" NeoVim handles ESC keys as alt+key, set this to solve the problem
 if has('nvim')
+	set mouse=
 	set ttimeout
 	set ttimeoutlen=0
 endif
