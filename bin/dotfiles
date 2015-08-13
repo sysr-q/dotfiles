@@ -74,7 +74,7 @@ class _FakeSH(object):  # Gross I know, fight me.
 
 PREFIX_ERROR = " \033[0;31m✖\033[0m"
 PREFIX_SUCCESS = " \033[0;32m✔\033[0m"
-PREFIX_INFO = " \033[0;33m➜\033[0m"
+PREFIX_INFO = " \033[0;34m➜\033[0m"
 PREFIX_DEBUG = " \033[0;34m?\033[0m"
 PREFIX_HEADER = "\n\033[1m{}\033[0m"
 
@@ -131,8 +131,8 @@ def update():
     else:
         if sh.git("rev-parse", "HEAD", _cwd=DOTFILES):
             _info("Updating", DOTFILES + "...", nr=True)
-            sh.git.pull()
-            sh.git.submodule("update", "--init", "--recursive", "--quiet")
+            sh.git.pull(_cwd=DOTFILES)
+            sh.git.submodule("update", "--init", "--recursive", "--quiet", _cwd=DOTFILES)
             _success_r()
         else:
             _exit(DOTFILES, "is not a git repository, can't update it.")
@@ -143,14 +143,15 @@ def update():
 def link():
     for dirn in sh.find(DOTFILES,
                         "-mindepth", 1,
-                        "-maxdepth", 2,
+                        "-maxdepth", 1,
                         "-type", "d",
                         "-not", "-iwholename", "*.git*"):
         # TODO: ln -fs $what $where
         what = dirn.rstrip()
-        where = os.path.join(PREFIX,
-                             "." + os.path.relpath(dirn, DOTFILES)).rstrip()
-        sh.ln("-fs", what, where)
+        where = os.path.join(PREFIX, "." + dirn).rstrip()
+        x = os.path.join(PREFIX,
+                         "." +dirn[len(DOTFILES):].rstrip().lstrip("/"))
+        sh.ln("-fs", what, where, x)
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()

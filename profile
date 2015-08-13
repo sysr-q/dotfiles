@@ -27,9 +27,8 @@
 # For more information, please refer to <http://unlicense.org>
 
 export GOPATH="$HOME/go"
-export GOBIN="$GOPATH/bin"
 
-export PATH="$HOME/.dotfiles/bin:$HOME/.local/bin:$GOBIN:$PATH"
+export PATH="$HOME/.bin:$HOME/.local/bin:$GOPATH/bin:$PATH"
 
 export EDITOR="vim"
 export BROWSER="chromium"
