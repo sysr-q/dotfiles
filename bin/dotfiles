@@ -148,10 +148,9 @@ def link():
                         "-not", "-iwholename", "*.git*"):
         # TODO: ln -fs $what $where
         what = dirn.rstrip()
-        where = os.path.join(PREFIX, "." + dirn).rstrip()
-        x = os.path.join(PREFIX,
+        where = os.path.join(PREFIX,
                          "." +dirn[len(DOTFILES):].rstrip().lstrip("/"))
-        sh.ln("-fs", what, where, x)
+        sh.ln("-fs", what, where)
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
