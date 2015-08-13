@@ -120,6 +120,20 @@ def _exists(path):
         return False
     return True
 
+
+def _find(path, t=None, min=1, max=1):
+    if t is not None:
+        x = ("-type", t)
+    else:
+        x = ()
+
+    for f in sh.find(path,
+                     "-mindepth", min,
+                     "-maxdepth", max,
+                     "-not", "-iwholename", "*.git*",
+                     *x):
+        yield os.path.basename(f.rstrip())
+
 # # # # # # # # # #
 
 
@@ -141,16 +155,21 @@ def update():
 
 
 def link():
-    for dirn in sh.find(DOTFILES,
-                        "-mindepth", 1,
-                        "-maxdepth", 1,
-                        #"-type", "d",
-                        "-not", "-iwholename", "*.git*"):
-        # TODO: ln -fs $what $where
-        what = dirn.rstrip()
-        where = os.path.join(PREFIX,
-                         "." +dirn[len(DOTFILES):].rstrip().lstrip("/"))
+    _info("Linking dotfiles to", PREFIX, nr=True)
+    for f in _find(DOTFILES, "f"):
+        what = os.path.join(DOTFILES, f)
+        where = os.path.join(PREFIX, "." + f)
         sh.ln("-fs", what, where)
+
+    for d in _find(DOTFILES, "d"):
+        # Make sure it exists.
+        sh.mkdir("-p", os.path.join(PREFIX, "." + d))
+        for df in _find(os.path.join(DOTFILES, d)):
+            what = os.path.join(DOTFILES, d, df)
+            where = os.path.join(PREFIX, "." + d, df)
+            sh.ln("-fs", what, where)
+
+    _success_r()
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
