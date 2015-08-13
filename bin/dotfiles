@@ -150,8 +150,7 @@ def link():
         what = dirn.rstrip()
         where = os.path.join(PREFIX,
                              "." + os.path.relpath(dirn, DOTFILES)).rstrip()
-        x = "." + os.path.relpath(dirn, DOTFILES).rstrip()
-        print("ln", "-fs", what, where, x)
+        sh.ln("-fs", what, where)
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
