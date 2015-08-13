@@ -1,187 +1,206 @@
-#!/usr/bin/env bash
-# script to update dotfiles and everything else
-# inspired by https://github.com/cowboy/dotfiles
+#!/usr/bin/env python2
+# -*- encoding: utf-8 -*-
+# Part of the "sysrq dotfiles experience". Available at:
+#    sysrq <chris@gibsonsec.org> https://gitlab.com/sysrq/dotfiles
+#
+# This is free and unencumbered software released into the public domain.
+#
+# Anyone is free to copy, modify, publish, use, compile, sell, or
+# distribute this software, either in source code form or as a compiled
+# binary, for any purpose, commercial or non-commercial, and by any
+# means.
+#
+# In jurisdictions that recognize copyright laws, the author or authors
+# of this software dedicate any and all copyright interest in the
+# software to the public domain. We make this dedication for the benefit
+# of the public at large and to the detriment of our heirs and
+# successors. We intend this dedication to be an overt act of
+# relinquishment in perpetuity of all present and future rights to this
+# software under copyright law.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+#
+# For more information, please refer to <http://unlicense.org>
+from __future__ import print_function
 
-PRETEND=0
-FORCE=0
-VERBOSE=0
-GIT_URL="git://github.com/sysr-q/dotfiles.git"
-ACTIONS="update link copy test"
+import argparse
+import os
+import sys
 
-function usage() {
-	cat << EOF
-Usage: $1 [-h] [-P] [-F] [-v] [-g <git_url>] [-a <actions>]
+try:
+    import sh
+except ImportError:
+    print("Install `sh` (pip install sh) for my sanity and yours.")
+    sys.exit(1)
 
-Options:
-    -h            Show this help
-    -P            Enable pretend mode (don't make any changes)
-    -F            Force install (if ~/.dotfiles exists, remove it)
-    -v            Enable verbose mode (print commands before running them)
-    -g <git_url>  Clone the dotfiles repo from git_url if this is a new
-                  installation (or if -F is set).
-                  Default is "$GIT_URL".
-    -a <actions>  Space separated list of actions to perform.
-                  Default is "$ACTIONS".
-EOF
-} # '
+# # # # # # # # # #
 
-# display helpers
-function e_header()  { echo -e "\n\033[1m$@\033[0m"; }
-function e_success() { echo -e " \033[0;32m✔\033[0m $@"; }
-function e_error()   { echo -e " \033[0;31m✖\033[0m $@"; }
-function e_arrow()   { echo -e " \033[0;33m➜\033[0m $@"; }
+PREFIX = os.path.expanduser("~")
 
-function p_find () {
-	if [[ $# -gt 1 ]]; then
-		t="-type $2"
-	fi
-	find "$1" -maxdepth 1 -mindepth 1 $t -print0 | xargs -0 -I{} basename "{}"
-}
+DOTFILES = os.path.join(PREFIX, ".dotfiles")
+GIT_URL = "https://gitlab.com/sysrq/dotfiles.git"
+BRANCH = "master"
 
-# Mock things if we're in pretend mode.
-function p_call() {
-	([[ $PRETEND -eq 1 ]] || [[ $VERBOSE -eq 1 ]]) && e_arrow "$@"
-	[[ $PRETEND -eq 1 ]] || "$@"
-}
+CLOBBER = True
 
-# actions should be functions  with names that start with 'action_'
-# actions that should be executed by default should have their names
-# (minus 'action_') added to the ACTIONS list at the top of this file
+# # # # # # # # # #
 
-function action_update() {
-	if [[ ! -d "$HOME/.dotfiles" ]] || [[ $FORCE -eq 1 ]]; then
-		# dotfiles dir doesnt't exist (or we're being forced to recreate it)
-		[[ $FORCE -eq 1 ]] && p_call rm -rf "$HOME/.dotfiles"
-		e_header "Cloning dotfiles repository..."
-		p_call git clone --recursive "$GIT_URL" "$HOME/.dotfiles" 2>/dev/null
-	else
-		# dotfiles dir exists, check if it's a git repo
-		cd "$HOME/.dotfiles"
-		if git rev-parse HEAD 2>/dev/null >/dev/null; then
-			# it's a git repo
-			e_header "Updating ~/.dotfiles..."
-			p_call git pull
-			p_call git submodule update --init --recursive --quiet 2>/dev/null
-		else
-			# it's not a git repo
-			e_error "~/.dotfiles is not a Git repository, can't update it."
-			return 1
-		fi
-	fi
-	cd "$HOME/.dotfiles"
-	e_success "Updating dotfiles successful (commit: $(git rev-parse --short HEAD))"
-}
 
-function action_link() {
-	e_header "Linking..."
-	e_arrow "Processing files in $HOME/.dotfiles/link"
-	for fn in $(p_find "$HOME/.dotfiles/link/" f); do
-		[[ -e "$HOME/$fn" ]] && p_call rm -rf "$HOME/$fn"
-		p_call ln -fs "$HOME/.dotfiles/link/$fn" "$HOME/$fn"
-		tmp_ret="$?"
-		if [[ "$tmp_ret" -ne 0 ]]; then
-			e_error "Failed to link \"$fn\": ln exited with $tmp_ret"
-			return 1
-		fi
-	done
-	# handle directories
-	for dir in $(p_find "$HOME/.dotfiles/link/" d); do
-		e_arrow "Processing files in $HOME/.dotfiles/link/$dir"
-		p_call mkdir -p "$HOME/$dir"
-		for fn in $(p_find "$HOME/.dotfiles/link/$dir"); do
-			[[ -e "$HOME/$dir/$fn" ]] && p_call rm -rf "$HOME/$dir/$fn"
-			p_call ln -fs "$HOME/.dotfiles/link/$dir/$fn" "$HOME/$dir/$fn"
-			tmp_ret="$?"
-			if [[ "$tmp_ret" -ne 0 ]]; then
-				e_error "Failed to link \"$fn\": ln exited with $tmp_ret"
-				return 1
-			fi
-		done
-	done
-	e_success "Linking successful!"
-}
+class _FakeSH(object):  # Gross I know, fight me.
+    def __init__(self):
+        self.x = []
 
-function action_copy() {
-	e_header "Copying files..."
-	for fn in $(p_find "$HOME/.dotfiles/copy/"); do
-		p_call cp -rf "$HOME/.dotfiles/copy/$fn" "$HOME/$fn"
-		tmp_ret="$?"
-		if [[ "$tmp_ret" -ne 0 ]]; then
-			e_error "Failed to copy \"$fn\": cp exited with $tmp_ret"
-			return 1
-		fi
-	done
-	e_success "Copying files successful!"
-}
+    def __getattr__(self, a):
+        self.x.append(a)
+        return self
 
-function action_test() {
-	e_header "Testing configuration..."
+    def __call__(self, *args, **kwargs):
+        x = self.x
+        a = ", ".join("%r" % r for r in args) if args else None
+        kw = (", ".join("%s=%r" % (k, v) for k, v in kwargs.items())
+              if kwargs else None)
+        _args = ", ".join(y for y in [a, kw] if y is not None)
+        self.x = []
+        _debug("%s(%s)" % (".".join(x), _args))
+        return "XXX"
 
-	e_arrow "Testing \$PATH..."
-	has_path="$(env -i bash -c "source \"$HOME/.profile\" && if [[ \":$PATH:\" == *\":$HOME/.dotfiles/bin\"* ]]; then echo 1; else echo 0; fi")"
-	if [[ "$has_path" == '1' ]]; then
-		e_success "\$PATH contains \"~/.dotfiles/bin\""
-	else
-		e_error "\$PATH does NOT contain \"~/.dotfiles/bin\" :("
-	fi
+# # # # # # # # # #
 
-	e_arrow "Testing shell sourcing..."
-	bash_source="$(env -i bash -c "source \"$HOME/.bashrc\" && echo \$DOTFILES_SOURCED")"
-	if [[ "$bash_source" == '1' ]]; then
-		e_success "bash sources \"~/.dotfiles/source\""
-	else
-		e_error "bash does NOT source \"~/.dotfiles/source\"."
-		e_arrow "To fix this, add the following line to your \".bashrc\":"
-		e_arrow "source \"\$HOME/.dotfiles/lib/source.sh\""
-	fi
+PREFIX_ERROR = " \033[0;31m✖\033[0m"
+PREFIX_SUCCESS = " \033[0;32m✔\033[0m"
+PREFIX_INFO = " \033[0;34m➜\033[0m"
+PREFIX_DEBUG = " \033[0;34m?\033[0m"
+PREFIX_HEADER = "\n\033[1m{}\033[0m"
 
-	zsh_source="$(env -i zsh -c "source \"$HOME/.zshrc\" && echo \$DOTFILES_SOURCED")"
-	if [[ "$zsh_source" == '1' ]]; then
-		e_success "zsh sources \"~/.dotfiles/source\""
-	else
-		e_error "zsh does NOT source \"~/.dotfiles/source\"."
-		e_arrow "To fix this, add the following line to your \".zshrc\":"
-		e_arrow "source \"\$HOME/.dotfiles/lib/source.sh\""
-	fi
-}
 
-while getopts "hPFvg:a:" OPTION; do
-	case "$OPTION" in
-		h)
-			usage $(basename $0)
-			exit 1
-			;;
-		P)
-			PRETEND=1
-			e_arrow "Pretend mode enabled - I won't actually make any changes."
-			;;
-		F)
-			FORCE=1
-			;;
-		v)
-			VERBOSE=1
-			;;
-		g)
-			GIT_URL="$OPTARG"
-			;;
-		a)
-			ACTIONS="$OPTARG"
-			;;
-	esac
-done
+def _error(*args, **kwargs):
+    print(PREFIX_ERROR, *args, **kwargs)
 
-# launching the actions in $ACTIONS
-for action in $ACTIONS; do
-	if declare -f "action_$action" >/dev/null; then
-		"action_$action"; tmp_ret="$?"
-		if [[ "$tmp_ret" -ne 0 ]] ; then
-			# action failed
-			e_error "Action \"$action\" returned non-zero error code ($tmp_ret), aborting"
-			exit 1
-		fi
-	else
-		e_error "Action \"$action\" could not be executed, aborting"
-		exit 1
-	fi
-done
-echo
+
+def _success(*args, **kwargs):
+    print(PREFIX_SUCCESS, *args, **kwargs)
+
+
+def _info(*args, **kwargs):
+    kwargs.setdefault("nr", False)
+    kwargs.setdefault("end", "" if kwargs.pop("nr") else None)
+    print(PREFIX_INFO, *args, **kwargs)
+    sys.stdout.flush()
+
+
+def _debug(*args, **kwargs):
+    print(PREFIX_DEBUG, *args, **kwargs)
+
+
+def _header(*args, **kwargs):
+    print(PREFIX_HEADER.format(" ".join(args)))
+
+
+def _success_r():
+    print("\r" + PREFIX_SUCCESS)
+
+
+def _exit(*args, **kwargs):
+    _error(*args, **kwargs)
+    sys.exit(1)
+
+# # # # # # # # # #
+
+
+def _exists(path):
+    try:
+        os.stat(path)
+    except OSError:
+        return False
+    return True
+
+
+def _find(path, t=None, min=1, max=1):
+    if t is not None:
+        x = ("-type", t)
+    else:
+        x = ()
+
+    for f in sh.find(path,
+                     "-mindepth", min,
+                     "-maxdepth", max,
+                     "-not", "-iwholename", "*.git*",
+                     *x):
+        yield os.path.basename(f.rstrip())
+
+# # # # # # # # # #
+
+
+def update():
+    if not _exists(DOTFILES):
+        _info("Cloning dotfiles repository...", nr=True)
+        sh.git.clone("--recursive", "--branch", BRANCH, GIT_URL, DOTFILES)
+        _success_r()
+    else:
+        if sh.git("rev-parse", "HEAD", _cwd=DOTFILES):
+            _info("Updating", DOTFILES + "...", nr=True)
+            sh.git.pull(_cwd=DOTFILES)
+            sh.git.submodule("update", "--init", "--recursive", "--quiet", _cwd=DOTFILES)
+            _success_r()
+        else:
+            _exit(DOTFILES, "is not a git repository, can't update it.")
+    commit = sh.git("rev-parse", "--short", "HEAD", _cwd=DOTFILES)
+    _info("Updating dotfiles successful (commit: %s)" % (commit.rstrip(),))
+
+
+def link():
+    _info("Linking dotfiles to", PREFIX, nr=True)
+    for f in _find(DOTFILES, "f"):
+        what = os.path.join(DOTFILES, f)
+        where = os.path.join(PREFIX, "." + f)
+        sh.ln("-fs", what, where)
+
+    for d in _find(DOTFILES, "d"):
+        # Make sure it exists.
+        sh.mkdir("-p", os.path.join(PREFIX, "." + d))
+        for df in _find(os.path.join(DOTFILES, d)):
+            what = os.path.join(DOTFILES, d, df)
+            where = os.path.join(PREFIX, "." + d, df)
+            sh.ln("-fs", what, where)
+
+    _success_r()
+
+if __name__ == "__main__":
+    p = argparse.ArgumentParser()
+    p.add_argument("-b", "--bland",
+                   dest="bland", action="store_true", default=False)
+    p.add_argument("-P", "--pretend",
+                   dest="pretend", action="store_true", default=False)
+    p.add_argument("-d", "--directory",
+                   dest="directory", type=str, default=DOTFILES)
+    p.add_argument("-g", "--git-url",
+                   dest="git_url", type=str, default=GIT_URL)
+    p.add_argument("--branch",
+                   dest="branch", type=str, default=BRANCH)
+    # TODO: -c/--clobber -nc/--no-clobber
+
+    args = p.parse_args()
+
+    if args.bland:
+        PREFIX_ERROR = "[!]"
+        PREFIX_SUCCESS = "[+]"
+        PREFIX_INFO = "[ ]"
+        PREFIX_DEBUG = "[?]"
+        PREFIX_HEADER = "-> {}"
+    if args.pretend:
+        sh = _FakeSH()
+
+    DOTFILES = args.directory
+    GIT_URL = args.git_url
+    BRANCH = args.branch
+
+    update()
+    link()
+
+# vim: syntax=python

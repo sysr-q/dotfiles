@@ -1,45 +1,51 @@
-[submodule "link/.vim/bundle/vim-pathogen"]
-	path = link/.vim/bundle/vim-pathogen
-	url = https://github.com/tpope/vim-pathogen.git
-[submodule "link/.vim/bundle/vim-airline"]
-	path = link/.vim/bundle/vim-airline
-	url = https://github.com/bling/vim-airline.git
-[submodule "awesome: assault"]
-	path = link/.config/awesome/assault
-	url = git://github.com/NuckChorris/assault.git
-[submodule "awesome: pulseaudio"]
-	path = link/.config/awesome/pulse
-	url = https://gist.github.com/7018116.git
+[submodule "vim: vim-pathogen"]
+	path = vim/bundle/vim-pathogen
+	url = git://github.com/tpope/vim-pathogen.git
+[submodule "vim: vim-airline"]
+	path = vim/bundle/vim-airline
+	url = git://github.com/bling/vim-airline.git
 [submodule "vim: solarized"]
-	path = link/.vim/bundle/vim-colors-solarized
-	url = https://github.com/altercation/vim-colors-solarized
+	path = vim/bundle/vim-colors-solarized
+	url = git://github.com/altercation/vim-colors-solarized
 [submodule "vim: nerdtree"]
-	path = link/.vim/bundle/nerdtree
-	url = https://github.com/scrooloose/nerdtree.git
-[submodule "vim: nerdtree tabs"]
-	path = link/.vim/bundle/vim-nerdtree-tabs
-	url = https://github.com/jistr/vim-nerdtree-tabs.git
+	path = vim/bundle/nerdtree
+	url = git://github.com/scrooloose/nerdtree.git
+[submodule "vim: nerdtree-tabs"]
+	path = vim/bundle/vim-nerdtree-tabs
+	url = git://github.com/jistr/vim-nerdtree-tabs.git
 [submodule "vim: gitgutter"]
-	path = link/.vim/bundle/vim-gitgutter
-	url = https://github.com/airblade/vim-gitgutter.git
+	path = vim/bundle/vim-gitgutter
+	url = git://github.com/airblade/vim-gitgutter.git
 [submodule "vim: vim-less"]
-	path = link/.vim/bundle/vim-less
-	url = https://github.com/groenewege/vim-less
+	path = vim/bundle/vim-less
+	url = git://github.com/groenewege/vim-less.git
 [submodule "vim: vim-go"]
-	path = link/.vim/bundle/vim-go
-	url = https://github.com/fatih/vim-go
+	path = vim/bundle/vim-go
+	url = git://github.com/fatih/vim-go.git
 [submodule "vim: vim-hackernews"]
-	path = link/.vim/bundle/vim-hackernews
+	path = vim/bundle/vim-hackernews
 	url = git://github.com/ryanss/vim-hackernews.git
 [submodule "vim: drawit"]
-	path = link/.vim/bundle/vim-drawit
+	path = vim/bundle/vim-drawit
 	url = git://github.com/vim-scripts/DrawIt.git
 [submodule "vim: vim-better-whitespace"]
-	path = link/.vim/bundle/vim-better-whitespace
+	path = vim/bundle/vim-better-whitespace
 	url = git://github.com/ntpeters/vim-better-whitespace
 [submodule "vim: vim-gundo"]
-	path = link/.vim/bundle/vim-gundo
+	path = vim/bundle/vim-gundo
 	url = git://github.com/sjl/gundo.vim.git
 [submodule "vim: rainbow-parentheses-vim"]
-	path = link/.vim/bundle/rainbow-parentheses-vim
+	path = vim/bundle/rainbow-parentheses-vim
 	url = git://github.com/kien/rainbow_parentheses.vim.git
+[submodule "awesome: assault"]
+	path = config/awesome/assault
+	url = git://github.com/NuckChorris/assault.git
+[submodule "awesome: pulseaudio"]
+	path = config/awesome/pulse
+	url = git://gist.github.com/7018116.git
+[submodule "awesome: eminent"]
+	path = config/awesome/eminent
+	url = git://github.com/guotsuan/eminent.git
+[submodule "tmux: tpm"]
+	path = tmux/plugins/tpm
+	url = git://github.com/tmux-plugins/tpm
