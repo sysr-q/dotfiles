@@ -44,7 +44,7 @@ except ImportError:
 PREFIX = os.path.expanduser("~")
 
 DOTFILES = os.path.join(PREFIX, ".dotfiles")
-GIT_URL = "git@gitlab.com:sysrq/dotfiles.git"
+GIT_URL = "https://gitlab.com/sysrq/dotfiles.git"
 BRANCH = "master"
 
 CLOBBER = True
