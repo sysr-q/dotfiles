@@ -29,19 +29,24 @@
 # Only set up if running interactively.
 [[ -t 0 ]] || exit 0
 
+# TODO: Make sure we're in a tmux shell. // exec it preferably.
+
 DOTFILES=$HOME/.dotfiles
 
-# TODO move this to zsh/aliases
-
-# autocomplete stuff (very important!!!)
+# autocomplete stuff
 autoload -U compinit
 compinit
 
-# Source stuff from $DOTFILES/zsh. Like old ~/dotfiles/lib/source.sh
+# Source stuff from $DOTFILES/zsh.
 if [[ -d "$DOTFILES/zsh" ]]; then
 	for file in $(find "$DOTFILES/zsh" -type f); do
 		source "$file"
 	done
+fi
+
+# Set up dircolors with a nice Solarized-based palette.
+if [[ -f "$DOTFILES/zsh/dircolors.ansi-dark" ]]; then
+	eval $(dircolors "$DOTFILES/zsh/dircolors.ansi-dark")
 fi
 
 # I use these, but you can expand on it.
