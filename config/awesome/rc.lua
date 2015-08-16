@@ -2,13 +2,13 @@ local gears = require("gears")
 local awful = require("awful")
 awful.rules = require("awful.rules")
 require("awful.autofocus")
-require("eminent") -- witchcraft in a box.
 local wibox = require("wibox")
 local beautiful = require("beautiful")
 local naughty = require("naughty")
 local assault = require("assault")
-local pulse = require("pulse")
+--x local pulse = require("pulse")
 local capi = { timer = timer }
+require("eminent") -- witchcraft in a box.
 
 home = (os.getenv("HOME") .. "/") or ""
 theme_name = "smyck"
@@ -37,6 +37,8 @@ end
 
 -- {{{ Theming
 beautiful.init(awful.util.getdir("config") .. "/themes/" .. theme_name .. "/theme.lua")
+
+local APW = require("apw/widget") -- must be after beautiful.init
 
 if beautiful.wallpaper then
   for s = 1, screen.count() do
@@ -100,7 +102,8 @@ widgets = {
       critical_color = beautiful.bg_urgent,
       charging_color = beautiful.highlight,
     }),
-    volume = wibox.widget.textbox(),
+	APW = APW,
+--x    volume = wibox.widget.textbox(),
   },
 }
 
@@ -130,7 +133,8 @@ for s = 1, screen.count() do
   right_layout:add(widgets.spacer)
   if s == 1 then right_layout:add(wibox.widget.systray()) end
   right_layout:add(widgets.spacer)
-  right_layout:add(widgets.all.volume)
+  --x right_layout:add(widgets.all.volume)
+  right_layout:add(widgets.all.APW)
   right_layout:add(widgets.spacer)
   right_layout:add(widgets.all.clock)
   right_layout:add(widgets.spacer)
@@ -148,6 +152,7 @@ end
 -- }}}
 
 -- {{{ Timers
+--[[
 timer = capi.timer { timeout = 1 }
 timer:connect_signal("timeout", function ()
   sym = "♪"
@@ -157,7 +162,10 @@ timer:connect_signal("timeout", function ()
   widgets.all.volume:set_markup(string.format('<span color="' .. beautiful.highlight .. '">%s</span> %.1f%%', sym, pulse.volumeGet() * 100))
 end)
 timer:start()
-timer:emit_signal("timeout")
+timer:emit_signal("timeout") --]]
+local APWTimer = timer({ timeout = 0.5 }) -- set update interval in s
+APWTimer:connect_signal("timeout", APW.Update)
+APWTimer:start()
 -- }}}
 
 -- {{{ Key bindings
@@ -221,6 +229,7 @@ globalkeys = awful.util.table.join(
   awful.key({ modkey }, "p", function() awful.util.spawn(locker) end),
 
   -- Volume keys
+  --[[
   awful.key({}, "#123", function()
     pulse.volumeUp()
   end),
@@ -230,6 +239,10 @@ globalkeys = awful.util.table.join(
   awful.key({}, "#121", function()
     pulse.muteToggle()
   end)
+  --]]
+  awful.key({}, "XF86AudioRaiseVolume",  APW.Up),
+  awful.key({}, "XF86AudioLowerVolume",  APW.Down),
+  awful.key({}, "XF86AudioMute",         APW.ToggleMute),
 
 )
 
