@@ -103,7 +103,6 @@ widgets = {
       charging_color = beautiful.highlight,
     }),
 	APW = APW,
---x    volume = wibox.widget.textbox(),
   },
 }
 
