@@ -96,6 +96,7 @@ end
 
 
 -- register mouse button actions
+--[[
 pulseBar.widget:buttons(awful.util.table.join(
 		awful.button({ }, 1, pulseWidget.ToggleMute),
 		awful.button({ }, 3, pulseWidget.LaunchMixer),
@@ -103,6 +104,7 @@ pulseBar.widget:buttons(awful.util.table.join(
 		awful.button({ }, 5, pulseWidget.Down)
 	)
 )
+--]]
 
 
 -- initialize
