@@ -242,8 +242,7 @@ globalkeys = awful.util.table.join(
   --]]
   awful.key({}, "XF86AudioRaiseVolume",  APW.Up),
   awful.key({}, "XF86AudioLowerVolume",  APW.Down),
-  awful.key({}, "XF86AudioMute",         APW.ToggleMute),
-
+  awful.key({}, "XF86AudioMute",         APW.ToggleMute)
 )
 
 clientkeys = awful.util.table.join(
