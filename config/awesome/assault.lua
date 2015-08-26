@@ -1,1 +1,0 @@
-assault/awesomewm/assault.lua

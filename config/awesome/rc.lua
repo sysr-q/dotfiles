@@ -1,173 +1,176 @@
-local gears = require("gears")
-local awful = require("awful")
-awful.rules = require("awful.rules")
-require("awful.autofocus")
-local wibox = require("wibox")
-local beautiful = require("beautiful")
-local naughty = require("naughty")
-local assault = require("assault")
---x local pulse = require("pulse")
-local capi = { timer = timer }
-require("eminent") -- witchcraft in a box.
+--  Part of the "sysrq dotfiles experience". Available at:
+--     sysrq <chris@gibsonsec.org> https://gitlab.com/sysrq/dotfiles
+--
+--  This is free and unencumbered software released into the public domain.
+--
+--  Anyone is free to copy, modify, publish, use, compile, sell, or
+--  distribute this software, either in source code form or as a compiled
+--  binary, for any purpose, commercial or non-commercial, and by any
+--  means.
+--
+--  In jurisdictions that recognize copyright laws, the author or authors
+--  of this software dedicate any and all copyright interest in the
+--  software to the public domain. We make this dedication for the benefit
+--  of the public at large and to the detriment of our heirs and
+--  successors. We intend this dedication to be an overt act of
+--  relinquishment in perpetuity of all present and future rights to this
+--  software under copyright law.
+--
+--  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+--  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+--  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+--  IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+--  OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+--  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+--  OTHER DEALINGS IN THE SOFTWARE.
+--
+--  For more information, please refer to <http://unlicense.org>
 
+awful       = require("awful")
+awful.rules = require("awful.rules")
+              require("awful.autofocus")
+beautiful   = require("beautiful")
+naughty     = require("naughty")
+wibox       = require("wibox")
+--
+vicious = require("vicious")
+          require("eminent")
+
+-- Config options
 home = (os.getenv("HOME") .. "/") or ""
-theme_name = "smyck"
+theme_name = "holo"
+date_format = "%Y-%m-%d %H:%M"
+
 terminal = "termite"
 locker = "lockmyi3"
+
 modkey = "Mod4"
 
--- {{{ Error handling
-do
-  local in_error = false
-  awesome.connect_signal("debug::error", function (err)
-    -- Make sure we don't go into an endless error loop
-    if in_error then return end
-    in_error = true
-
-    naughty.notify({
-      preset = naughty.config.presets.critical,
-      title = "Oops, an error happened!",
-      text = err,
-    })
-
-    in_error = false
-  end)
-end
--- }}}
-
--- {{{ Theming
+-- Beautiful theme
 beautiful.init(awful.util.getdir("config") .. "/themes/" .. theme_name .. "/theme.lua")
 
-local APW = require("apw/widget") -- must be after beautiful.init
-
-if beautiful.wallpaper then
-  for s = 1, screen.count() do
-    gears.wallpaper.maximized(beautiful.wallpaper, s, false)
-  end
-end
-
--- }}}
-
--- {{{ Tags
+-- Tags
 local layouts = {
   awful.layout.suit.tile,
   awful.layout.suit.tile.left,
   awful.layout.suit.tile.bottom,
   awful.layout.suit.tile.top,
-  awful.layout.suit.magnifier,
-  awful.layout.suit.max,
+  --awful.layout.suit.magnifier,
+  --awful.layout.suit.max,
+  awful.layout.suit.fair,
   awful.layout.suit.floating,
 }
 
 tags = {}
 for s = 1, screen.count() do
-  -- Each screen has its own tag table.
-  tags[s] = awful.tag({ 1, 2, 3, 4, 5, 6, 7, 8, 9 }, s, layouts[1])
+	-- Each screen has its own tag table.
+	tags[s] = awful.tag({ 1, 2, 3, 4, 5, 6, 7, 8, 9 }, s, layouts[1])
 end
--- }}}
 
--- {{{ Wiboxes
-widgets = {
-  spacer = wibox.widget.textbox(" "),
-  all = {
-    clock = awful.widget.textclock("%Y-%m-%d %H:%M", 1),
-    taglist = {
-      buttons = awful.util.table.join(
-        awful.button({}, 1, awful.tag.viewonly),
-        awful.button({modkey}, 1, awful.client.movetotag),
-        awful.button({}, 3, awful.tag.viewtoggle),
-        awful.button({modkey}, 3, awful.client.toggletag)
-      ),
-    },
-    tasklist = {
-      buttons = awful.util.table.join(
-        awful.button({}, 1, function(c)
-          if c == client.focus then
-            c.minimized = true
-          else
-            c.minimized = false
-            if not c:isvisible() then
-              awful.tag.viewonly(c:tags()[1])
-            end
-            client.focus = c
-            c:raise()
-          end
-        end)
-      )
-    },
-    assault = assault({
-      critical_level = 0.15,
-      width = 28,
-      height = 11,
-      critical_color = beautiful.bg_urgent,
-      charging_color = beautiful.highlight,
-    }),
-	APW = APW,
-  },
-}
+-- Widgets
+separator = wibox.widget.imagebox()
+separator:set_image(beautiful.widget_sep)
 
-wiboxes = {}
+spacer = wibox.widget.textbox(" ")
+
+systray = wibox.widget.systray()
+
+-- APW/pulse (must be after beautiful.init)
+local APW = require("apw/widget")
+
+-- Battery -- TODO
+batwidget = awful.widget.progressbar()
+batwidget:set_width(40)
+batwidget:set_height(8)
+batwidget:set_vertical(false)
+batwidget:set_background_color("#676767")
+batwidget:set_border_color(nil)
+batwidget:set_color("#D9D9D9")
+--batwidget:set_color({ type = "linear", from = { 0, 0 }, to = { 0, 10 },
+--    stops = { { 0, "#AECF96" }, { 0.5, "#88A175" }, { 1, "#FF5656" }}})
+vicious.register(batwidget, vicious.widgets.bat, "$2", 3, "BAT0")
+
+-- Clock
+datewidget = wibox.widget.textbox()
+vicious.register(datewidget, vicious.widgets.date, "%Y-%m-%d %H:%M")
+
+-- Wiboxes
+mywibox     = {}
+mypromptbox = {}
+mylayoutbox = {}
+mytaglist   = {}
+mytaglist.buttons = awful.util.table.join(
+	awful.button({}, 1, awful.tag.viewonly),
+	awful.button({modkey}, 1, awful.client.movetotag),
+	awful.button({}, 3, awful.tag.viewtoggle),
+	awful.button({modkey}, 3, awful.client.toggletag))
+mytasklist  = {}
+mytasklist.buttons = awful.util.table.join(
+                     awful.button({ }, 1, function (c)
+						  if c == client.focus then
+							  c.minimized = true
+						  else
+							  -- Without this, the following
+							  -- :isvisible() makes no sense
+							  c.minimized = false
+							  if not c:isvisible() then
+								  awful.tag.viewonly(c:tags()[1])
+							  end
+							  -- This will also un-minimize
+							  -- the client, if needed
+							  client.focus = c
+							  c:raise()
+						  end
+					  end))
 
 for s = 1, screen.count() do
-  widgets[s] = {}
-  widgets[s].prompt = awful.widget.prompt()
-  widgets[s].layoutbox = awful.widget.layoutbox(s)
-  widgets[s].layoutbox:buttons(awful.util.table.join(
-    awful.button({ }, 1, function () awful.layout.inc(layouts, 1) end),
-    awful.button({ }, 3, function () awful.layout.inc(layouts, -1) end)
-  ))
-  widgets[s].tasklist = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, widgets.all.tasklist.buttons)
-  widgets[s].taglist = awful.widget.taglist(s, awful.widget.taglist.filter.all, widgets.all.taglist.buttons)
+	mypromptbox[s] = awful.widget.prompt()
+	--
+	mylayoutbox[s] = awful.widget.layoutbox(s)
+	mylayoutbox[s]:buttons(awful.util.table.join(
+		awful.button({ }, 1, function () awful.layout.inc(layouts, 1) end),
+		awful.button({ }, 3, function () awful.layout.inc(layouts, -1) end)
+	))
+	--
+	mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, mytaglist.buttons)
+	--
+	mytasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, mytasklist.buttons)
+	--
+	mywibox[s] = awful.wibox({ position = "top", screen = s, height = 16 })
 
-  wiboxes[s] = awful.wibox({ position = "top", screen = s })
+	-- Widgets that are aligned to the left
+	local left_layout = wibox.layout.fixed.horizontal()
+	left_layout:add(mytaglist[s])
+	left_layout:add(mypromptbox[s])
+	left_layout:add(spacer)
 
-  -- Widgets that are aligned to the left
-  local left_layout = wibox.layout.fixed.horizontal()
-  left_layout:add(widgets[s].taglist)
-  left_layout:add(widgets[s].prompt)
-  left_layout:add(widgets.spacer)
+	-- Widgets that are aligned to the right
+	local right_layout = wibox.layout.fixed.horizontal()
+	right_layout:add(spacer)
+	if s == 1 then
+		right_layout:add(systray)
+		right_layout:add(spacer)
+	end
+	right_layout:add(APW); right_layout:add(spacer)
+	right_layout:add(datewidget); right_layout:add(spacer)
+	right_layout:add(batwidget); right_layout:add(spacer)
+	right_layout:add(mylayoutbox[s])
 
-  -- Widgets that are aligned to the right
-  local right_layout = wibox.layout.fixed.horizontal()
-  right_layout:add(widgets.spacer)
-  if s == 1 then right_layout:add(wibox.widget.systray()) end
-  right_layout:add(widgets.spacer)
-  --x right_layout:add(widgets.all.volume)
-  right_layout:add(widgets.all.APW)
-  right_layout:add(widgets.spacer)
-  right_layout:add(widgets.all.clock)
-  right_layout:add(widgets.spacer)
-  right_layout:add(widgets.all.assault)
-  right_layout:add(widgets[s].layoutbox)
+	-- Now bring it all together (with the tasklist in the middle)
+	local layout = wibox.layout.align.horizontal()
+	layout:set_left(left_layout)
+	layout:set_middle(mytasklist[s])
+	layout:set_right(right_layout)
 
-  -- Now bring it all together (with the tasklist in the middle)
-  local layout = wibox.layout.align.horizontal()
-  layout:set_left(left_layout)
-  layout:set_middle(widgets[s].tasklist)
-  layout:set_right(right_layout)
-
-  wiboxes[s]:set_widget(layout)
+	mywibox[s]:set_widget(layout)
 end
--- }}}
 
--- {{{ Timers
---[[
-timer = capi.timer { timeout = 1 }
-timer:connect_signal("timeout", function ()
-  sym = "♪"
-  if pulse.muteGet() then
-    sym = "M"
-  end
-  widgets.all.volume:set_markup(string.format('<span color="' .. beautiful.highlight .. '">%s</span> %.1f%%', sym, pulse.volumeGet() * 100))
-end)
-timer:start()
-timer:emit_signal("timeout") --]]
+-- Timers
 local APWTimer = timer({ timeout = 0.5 }) -- set update interval in s
 APWTimer:connect_signal("timeout", APW.Update)
 APWTimer:start()
--- }}}
 
--- {{{ Key bindings
+-- Key bindings
 globalkeys = awful.util.table.join(
   awful.key({ modkey,           }, "Left",   awful.tag.viewprev       ),
   awful.key({ modkey,           }, "Right",  awful.tag.viewnext       ),
@@ -201,7 +204,7 @@ globalkeys = awful.util.table.join(
   -- Standard program
   awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end),
   awful.key({ modkey, "Control" }, "r", awesome.restart),
-  awful.key({ modkey, "Shift"   }, "q", awesome.quit),
+  awful.key({ modkey, "Shift", "Control" }, "q", awesome.quit),
 
   awful.key({ modkey,           }, "l",     function () awful.tag.incmwfact( 0.05)    end),
   awful.key({ modkey,           }, "h",     function () awful.tag.incmwfact(-0.05)    end),
@@ -215,7 +218,7 @@ globalkeys = awful.util.table.join(
   awful.key({ modkey, "Control" }, "n", awful.client.restore),
 
   -- Prompt
-  awful.key({ modkey },            "r",     function () widgets[mouse.screen].prompt:run() end),
+  awful.key({ modkey },            "r",     function () mypromptbox[mouse.screen]:run() end),
 
   awful.key({ modkey }, "x",
             function ()
@@ -228,17 +231,6 @@ globalkeys = awful.util.table.join(
   awful.key({ modkey }, "p", function() awful.util.spawn(locker) end),
 
   -- Volume keys
-  --[[
-  awful.key({}, "#123", function()
-    pulse.volumeUp()
-  end),
-  awful.key({}, "#122", function()
-    pulse.volumeDown()
-  end),
-  awful.key({}, "#121", function()
-    pulse.muteToggle()
-  end)
-  --]]
   awful.key({}, "XF86AudioRaiseVolume",  APW.Up),
   awful.key({}, "XF86AudioLowerVolume",  APW.Down),
   awful.key({}, "XF86AudioMute",         APW.ToggleMute)
@@ -312,9 +304,8 @@ clientbuttons = awful.util.table.join(
 
 -- Set keys
 root.keys(globalkeys)
--- }}}
 
--- {{{ Rules
+-- Rules
 awful.rules.rules = {
   { rule = { },
     properties = { border_width = beautiful.border_width,
@@ -322,39 +313,10 @@ awful.rules.rules = {
            focus = awful.client.focus.filter,
            keys = clientkeys,
            buttons = clientbuttons } },
-  { rule = { class = "MPlayer" },
-    properties = { floating = true } },
   { rule = { class = "pinentry" },
     properties = { floating = true } },
   { rule = { class = "gimp" },
     properties = { floating = true } },
-  { rule = { class = "Pidgin" },
-    properties = { floating = true } },
-  { rule = { class = "Steam" },
-    properties = { floating = true } },
+--  { rule = { class = "Steam" },
+--    properties = { floating = true } },
 }
--- }}}
-
--- {{{ Signals
--- Signal function to execute when a new client appears.
-client.connect_signal("manage", function (c, startup)
-  -- Enable sloppy focus
-  c:connect_signal("mouse::enter", function(c)
-    if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
-      and awful.client.focus.filter(c) then
-      client.focus = c
-    end
-  end)
-
-  if not startup then
-    -- Put windows in a smart way, only if they does not set an initial position.
-    if not c.size_hints.user_position and not c.size_hints.program_position then
-      awful.placement.no_overlap(c)
-      awful.placement.no_offscreen(c)
-    end
-  end
-end)
-
-client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
-client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
--- }}}
