@@ -1,5 +1,5 @@
 " Part of the "sysrq dotfiles experience". Available at:
-"    sysrq <chris@gibsonsec.org> https://gitlab.com/sysrq/dotfiles
+"    sysrq <chris@gibsonsec.org> https://github.com/sysr-q/dotfiles
 "
 " This is free and unencumbered software released into the public domain.
 "
