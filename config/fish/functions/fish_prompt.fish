@@ -88,3 +88,14 @@ function fish_prompt
 		echo -ns (set_color -b normal) (set_color black) "$SEP "
 	end
 end
+
+function fish_right_prompt
+	set -l last_status $status
+
+	if test $last_status -gt 0
+		echo -ns (set_color red) ":(" " " (set_color normal)
+	end
+
+	set_color normal
+	date "+%H:%M:%S"
+end
