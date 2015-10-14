@@ -26,6 +26,48 @@
 #
 # For more information, please refer to <http://unlicense.org>
 
+# /etc/profile and ~/.profile here
+if status --is-login
+		## /etc/profile
+		# Set our umask
+		umask 022
+
+		# Set our default path
+        set -xg PATH /usr/local/sbin /usr/local/bin /usr/bin $PATH
+
+		# Unset these, copying /etc/profile
+		set -e TERMCAP
+		set -e MANPATH
+
+		## ~/.profile
+		set -xg GOPATH "$HOME/go"
+
+		set -xg PATH $HOME/.bin $HOME/.local/bin $GOPATH/bin $PATH
+
+		set -xg EDITOR vim
+		set -xg BROWSER chromium
+
+		# Fight me.
+		# set -xg LANG en_US.UTF-8
+
+		# TODO: /etc/profile.d/*.{,c}sh
+end
+
+# start X at login
+#if status --is-login
+#	if test -z "$DISPLAY" -a $XDG_VTNR -eq 1
+#		exec startx -- -keeptty
+#	end
+#end
+
+# Only set up if we're in interactive mode.
+if not status --is-interactive
+	exit 0
+end
+
+set DOTFILES $HOME/.dotfiles
+
+## Aliases
 function nvim-maybe
 	if command -v nvim >/dev/null ^/dev/null
 		nvim $argv
@@ -41,3 +83,17 @@ alias grep "grep --color=auto"
 alias ls "ls --color=auto --group-directories-first"
 alias ll "ls --color=auto -l"
 alias rm "rm -I"
+
+# Set up dircolors for ls, et al.
+if test -f "$DOTFILES/config/dircolors.ansi-dark"
+	eval (dircolors -c "$DOTFILES/config/dircolors.ansi-dark")
+end
+
+# Set up keychain.
+set KEYS id_rsa id_ecdsa
+if test ! -n (command -s keychain >/dev/null ^/dev/null)
+	set -l IFS
+	eval (keychain --eval --agents ssh -Q --quiet $KEYS)
+end
+
+# Source /etc/profile and ~/.profile
