@@ -53,6 +53,9 @@ if status --is-login
 		# TODO: /etc/profile.d/*.{,c}sh
 end
 
+# I know how to use fish thx tho.
+set -e fish_greeting
+
 # start X at login
 #if status --is-login
 #	if test -z "$DISPLAY" -a $XDG_VTNR -eq 1
