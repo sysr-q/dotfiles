@@ -91,9 +91,7 @@ end
 
 # Set up keychain.
 set KEYS id_rsa id_ecdsa
-if test ! -n (command -s keychain >/dev/null ^/dev/null)
+if command -s keychain >/dev/null ^/dev/null
 	set -l IFS
 	eval (keychain --eval --agents ssh -Q --quiet $KEYS)
 end
-
-# Source /etc/profile and ~/.profile
