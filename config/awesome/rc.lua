@@ -233,7 +233,13 @@ globalkeys = awful.util.table.join(
   -- Volume keys
   awful.key({}, "XF86AudioRaiseVolume",  APW.Up),
   awful.key({}, "XF86AudioLowerVolume",  APW.Down),
-  awful.key({}, "XF86AudioMute",         APW.ToggleMute)
+  awful.key({}, "XF86AudioMute",         APW.ToggleMute),
+
+  -- Media keys
+  awful.key({ }, "XF86AudioPlay", function () awful.util.spawn("playerctl play-pause --player=Lollypop") end),
+  awful.key({ }, "XF86AudioNext", function () awful.util.spawn("playerctl next --player=Lollypop") end),
+  awful.key({ }, "XF86AudioPrev", function () awful.util.spawn("playerctl previous --player=Lollypop") end),
+  awful.key({ }, "XF86AudioStop", function () awful.util.spawn("playerctl stop --player=Lollypop") end)
 )
 
 clientkeys = awful.util.table.join(
