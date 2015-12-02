@@ -35,6 +35,9 @@ if status --is-login
 		# Set our default path
         set -xg PATH /usr/local/sbin /usr/local/bin /usr/bin $PATH
 
+		# Add gnu coreutils (from brew) for OS X.
+		set -xg PATH /usr/local/opt/coreutils/libexec/gnubin $PATH
+
 		# Unset these, copying /etc/profile
 		set -e TERMCAP
 		set -e MANPATH
@@ -75,7 +78,7 @@ function nvim-maybe
 	if command -v nvim >/dev/null ^/dev/null
 		nvim $argv
 	else
-		vim $argv
+		/usr/bin/vim $argv
 	end
 end
 
@@ -89,16 +92,11 @@ alias rm "rm -I"
 
 # Set up dircolors for ls, et al.
 if test -f "$DOTFILES/config/dircolors.ansi-dark"
-	# brew coreutils prefixes with 'g' on OSX.
-	if command -s gdircolors >/dev/null ^/dev/null
-		eval (gdircolors -c "$DOTFILES/config/dircolors.ansi-dark")
-	else
-		eval (dircolors -c "$DOTFILES/config/dircolors.ansi-dark")
-	end
+	eval (dircolors -c "$DOTFILES/config/dircolors.ansi-dark")
 end
 
 # Set up keychain.
-set KEYS id_rsa id_ecdsa
+set KEYS id_rsa id_ecdsa id_ed25519
 if command -s keychain >/dev/null ^/dev/null
 	set -l IFS
 	eval (keychain --eval --agents ssh -Q --quiet $KEYS)
