@@ -89,7 +89,12 @@ alias rm "rm -I"
 
 # Set up dircolors for ls, et al.
 if test -f "$DOTFILES/config/dircolors.ansi-dark"
-	eval (dircolors -c "$DOTFILES/config/dircolors.ansi-dark")
+	# brew coreutils prefixes with 'g' on OSX.
+	if command -s gdircolors >/dev/null ^/dev/null
+		eval (gdircolors -c "$DOTFILES/config/dircolors.ansi-dark")
+	else
+		eval (dircolors -c "$DOTFILES/config/dircolors.ansi-dark")
+	end
 end
 
 # Set up keychain.
