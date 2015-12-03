@@ -83,6 +83,8 @@ set timeout
 set timeoutlen=750
 set ttimeoutlen=250
 
+set pastetoggle=<F12>
+
 " NeoVim handles ESC keys as alt+key, set this to solve the problem
 if has('nvim')
 	set mouse=
