@@ -38,6 +38,9 @@ if status --is-login
 		# Add gnu coreutils (from brew) for OS X.
 		set -xg PATH /usr/local/opt/coreutils/libexec/gnubin $PATH
 
+		# pip stuff on OS X
+		set -xg PATH $HOME/Library/Python/2.7/bin $PATH
+
 		# Unset these, copying /etc/profile
 		set -e TERMCAP
 		set -e MANPATH
