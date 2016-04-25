@@ -53,6 +53,9 @@ if status --is-login
 		set -xg EDITOR vim
 		set -xg BROWSER chromium
 
+		# Opt-out. Really?
+		set -xg HOMEBREW_NO_ANALYTICS 1
+
 		# Fight me.
 		# set -xg LANG en_US.UTF-8
 

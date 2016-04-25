@@ -36,4 +36,6 @@ export BROWSER="chromium"
 # Bad? Bad. Makes mosh work though.
 export LANG="en_US.UTF-8"
 
+export HOMEBREW_NO_ANALYTICS=1
+
 # vim: syntax=sh
