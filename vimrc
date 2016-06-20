@@ -26,6 +26,9 @@
 "
 " For more information, please refer to <http://unlicense.org>
 
+" I use fish usually, and that doesn't work for some stuff.
+set shell=/bin/sh
+
 runtime bundle/vim-pathogen/autoload/pathogen.vim
 execute pathogen#infect()
 
