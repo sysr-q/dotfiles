@@ -48,7 +48,7 @@ if status --is-login
 		## ~/.profile
 		set -xg GOPATH "$HOME/go"
 
-		set -xg PATH $HOME/.bin $HOME/.local/bin $GOPATH/bin $PATH
+		set -xg PATH $HOME/.bin $HOME/.local/bin $GOPATH/bin $HOME/.cargo/bin $PATH
 
 		set -xg EDITOR vim
 		set -xg BROWSER chromium
