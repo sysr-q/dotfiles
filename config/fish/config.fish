@@ -88,6 +88,16 @@ function nvim-maybe
 	end
 end
 
+function bpython-maybe
+	if command -v bpython >/dev/null ^/dev/null
+		bpython $argv
+	else
+		/usr/bin/env python $argv
+	end
+end
+
+alias python bpython-maybe
+
 alias vi nvim-maybe
 alias vim nvim-maybe
 
