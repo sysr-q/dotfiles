@@ -49,6 +49,9 @@ set laststatus=2
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
 
+" .js is probably me learning React.
+let g:jsx_ext_required = 0
+
 let g:go_fmt_autosave = 1
 au FileType go nmap <leader>r <Plug>(go-run)
 au FileType go nmap <leader>b <Plug>(go-build)
