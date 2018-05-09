@@ -26,11 +26,14 @@
 #
 # For more information, please refer to <http://unlicense.org>
 
-function tm
+function add_to_path -d "Add a directory to PATH if it exists"
 	if test (count $argv) = 0
-		echo "usage: tm <session>"
-		tmux ls
 		return 1
 	end
-	tmux has -t $argv[1]; and tmux attach -d -t $argv[1]; or tmux new -s $argv[1]
+	for folder in $argv
+		if test ! -d $folder
+			continue
+		end
+		set --universal fish_user_paths $fish_user_paths $folder
+	end
 end

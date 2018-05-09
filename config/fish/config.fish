@@ -33,23 +33,29 @@ if status --is-login
 		umask 022
 
 		# Set our default path
-        set -xg PATH /usr/local/sbin /usr/local/bin /usr/bin $PATH
+		add_to_path /usr/local/sbin /usr/local/bin /usr/bin
+        #set -xg PATH /usr/local/sbin /usr/local/bin /usr/bin $PATH
 
+		## ~/.profile
+		set -xg GOPATH "$HOME/go"
+
+		## macOS specific stuff
 		# Add gnu coreutils (from brew) for OS X.
-		set -xg PATH /usr/local/opt/coreutils/libexec/gnubin $PATH
+		add_to_path /usr/local/opt/coreutils/libexec/gnubin
+		#set -xg PATH /usr/local/opt/coreutils/libexec/gnubin $PATH
+		# python2/python3 pip (from brew)
+		add_to_path ~/Library/Python/2.7/bin ~/Library/Python/3.6/bin
+		#set -xg PATH $HOME/Library/Python/2.7/bin $PATH
 
-		# pip stuff on OS X
-		set -xg PATH $HOME/Library/Python/2.7/bin $PATH
+		# General bin directories
+		add_to_path $HOME/.bin ~/.local/bin $GOPATH/bin ~/.cargo/bin
+		#set -xg PATH $HOME/.bin $HOME/.local/bin $GOPATH/bin $HOME/.cargo/bin $PATH
 
 		# Unset these, copying /etc/profile
 		set -e TERMCAP
 		set -e MANPATH
 
-		## ~/.profile
-		set -xg GOPATH "$HOME/go"
-
-		set -xg PATH $HOME/.bin $HOME/.local/bin $GOPATH/bin $HOME/.cargo/bin $PATH
-
+		# :^)
 		set -xg EDITOR vim
 		set -xg BROWSER chromium
 
@@ -84,7 +90,7 @@ function nvim-maybe
 	if command -v nvim >/dev/null ^/dev/null
 		nvim $argv
 	else
-		/usr/bin/vim $argv
+		command vim $argv
 	end
 end
 

@@ -22,9 +22,6 @@
 [submodule "vim: vim-go"]
 	path = vim/bundle/vim-go
 	url = git://github.com/fatih/vim-go.git
-[submodule "vim: vim-hackernews"]
-	path = vim/bundle/vim-hackernews
-	url = git://github.com/ryanss/vim-hackernews.git
 [submodule "vim: drawit"]
 	path = vim/bundle/vim-drawit
 	url = git://github.com/vim-scripts/DrawIt.git
