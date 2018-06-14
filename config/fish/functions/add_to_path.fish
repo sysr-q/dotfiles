@@ -34,6 +34,8 @@ function add_to_path -d "Add a directory to PATH if it exists"
 		if test ! -d $folder
 			continue
 		end
-		set --universal fish_user_paths $fish_user_paths $folder
+		if not contains $folder $fish_user_paths
+			set --universal fish_user_paths $fish_user_paths $folder
+		end
 	end
 end
