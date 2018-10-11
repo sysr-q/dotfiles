@@ -84,6 +84,12 @@ au Syntax * RainbowParenthesesLoadRound
 au Syntax * RainbowParenthesesLoadSquare
 au Syntax * RainbowParenthesesLoadBraces
 
+augroup fmt
+  autocmd!
+  autocmd BufWritePre *.py undojoin | Neoformat! python black
+  " autocmd BufWritePre *.py Neoformat! python black
+augroup END
+
 " NeoVim related stuff.
 set timeout
 set timeoutlen=750
