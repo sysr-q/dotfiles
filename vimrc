@@ -102,4 +102,7 @@ if has('nvim')
 	set mouse=
 	set ttimeout
 	set ttimeoutlen=0
+
+	" Awesome line substitution.
+	set inccommand=nosplit
 endif
