@@ -43,7 +43,7 @@ nnoremap j gj
 nnoremap k gk
 nmap <silent> <leader>/ :nohlsearch<CR>
 
-let NERDTreeIgnore = ['\.pyc$', '__pycache__$', '.egg-info$[[dir]]']
+let NERDTreeIgnore = ['\.pyc$', '__pycache__$', 'venv$[[dir]]', 'venv2$[[dir]]', 'venv3$[[dir]]', '.egg-info$[[dir]]']
 
 set laststatus=2
 let g:airline_powerline_fonts = 1
