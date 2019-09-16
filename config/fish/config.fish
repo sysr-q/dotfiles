@@ -62,6 +62,9 @@ if status --is-login
 		# Opt-out. Really?
 		set -xg HOMEBREW_NO_ANALYTICS 1
 
+		# 'null' is invisible on Solarized Dark by default.
+		set -x JQ_COLORS '1;39:0;39:0;39:0;39:0;32:1;39:1;39'
+
 		# Fight me.
 		# set -xg LANG en_US.UTF-8
 
