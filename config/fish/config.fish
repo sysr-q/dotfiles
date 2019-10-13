@@ -34,7 +34,6 @@ if status --is-login
 
 		# Set our default path
 		add_to_path /usr/local/sbin /usr/local/bin /usr/bin
-        #set -xg PATH /usr/local/sbin /usr/local/bin /usr/bin $PATH
 
 		## ~/.profile
 		set -xg GOPATH "$HOME/go"
@@ -42,14 +41,14 @@ if status --is-login
 		## macOS specific stuff
 		# Add gnu coreutils (from brew) for OS X.
 		add_to_path /usr/local/opt/coreutils/libexec/gnubin
-		#set -xg PATH /usr/local/opt/coreutils/libexec/gnubin $PATH
+
 		# python2/python3 pip (from brew)
-		add_to_path ~/Library/Python/2.7/bin ~/Library/Python/3.6/bin
-		#set -xg PATH $HOME/Library/Python/2.7/bin $PATH
+		add_to_path ~/Library/Python/2.7/bin
+		add_to_path ~/Library/Python/3.6/bin
+		add_to_path ~/Library/Python/3.7/bin
 
 		# General bin directories
 		add_to_path $HOME/.bin ~/.local/bin $GOPATH/bin ~/.cargo/bin
-		#set -xg PATH $HOME/.bin $HOME/.local/bin $GOPATH/bin $HOME/.cargo/bin $PATH
 
 		# Unset these, copying /etc/profile
 		set -e TERMCAP
