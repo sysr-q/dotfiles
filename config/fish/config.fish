@@ -43,9 +43,10 @@ if status --is-login
 		add_to_path /usr/local/opt/coreutils/libexec/gnubin
 
 		# python2/python3 pip (from brew)
-		add_to_path ~/Library/Python/2.7/bin
-		add_to_path ~/Library/Python/3.6/bin
+		# We have them in this order so newer pip binaries are picked up.
 		add_to_path ~/Library/Python/3.7/bin
+		add_to_path ~/Library/Python/3.6/bin
+		add_to_path ~/Library/Python/2.7/bin
 
 		# General bin directories
 		add_to_path $HOME/.bin ~/.local/bin $GOPATH/bin ~/.cargo/bin
@@ -63,9 +64,6 @@ if status --is-login
 
 		# 'null' is invisible on Solarized Dark by default.
 		set -x JQ_COLORS '1;39:0;39:0;39:0;39:0;32:1;39:1;39'
-
-		# Fight me.
-		# set -xg LANG en_US.UTF-8
 
 		# TODO: /etc/profile.d/*.{,c}sh
 end
@@ -104,10 +102,10 @@ function bpython-maybe
 	end
 end
 
-alias python bpython-maybe
-
 alias vi nvim-maybe
 alias vim nvim-maybe
+
+alias python bpython-maybe
 
 alias grep "grep --color=auto"
 alias ls "ls --color=auto --group-directories-first"
