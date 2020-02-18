@@ -55,10 +55,10 @@ function fish_prompt
 
 	# user@host >
 	echo -ns (set_color -b cyan) (set_color black) " $USER@$__fish_prompt_hostname "
-	echo -ns (set_color -b black) (set_color cyan) "$SEP"
+	echo -ns (set_color -b blue) (set_color cyan) "$SEP"
 
 	# ~/foo/bar >
-	echo -ns (set_color -b black) (set_color white) " $CUR_PWD "
+	echo -ns (set_color -b blue) (set_color white) " $CUR_PWD "
 
 	# > master >
 	if test -n (__git_dir)
@@ -68,7 +68,7 @@ function fish_prompt
 			__fish_git_prompt >/dev/null ^/dev/null
 		end
 
-		set -l fgc black
+		set -l fgc blue
 		set -l bgc green
 		if test -n (__fish_git_prompt_dirty)
 			set bgc red
@@ -77,7 +77,7 @@ function fish_prompt
 		set -l ahead (__git_is_ahead)
 		if test -n $ahead -a $ahead -ne 0
 			set fgc white
-			echo -ns (set_color -b $fgc) (set_color black) "$SEP"
+			echo -ns (set_color -b $fgc) (set_color blue) "$SEP"
 			# echo -ns (set_color black) " " $ahead " "
 		end
 
@@ -85,7 +85,7 @@ function fish_prompt
 		echo -ns (set_color white) " " (__fish_git_prompt "%s") " "
 		echo -ns (set_color -b normal) (set_color $bgc) "$SEP "
 	else
-		echo -ns (set_color -b normal) (set_color black) "$SEP "
+		echo -ns (set_color -b normal) (set_color blue) "$SEP "
 	end
 end
 
