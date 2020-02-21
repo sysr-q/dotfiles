@@ -51,7 +51,7 @@ function fish_prompt
 
 	set -l SEP \uE0B0
 	set -l SEPT \uE0B1
-	set -l CUR_PWD (pwd | sed -e "s#^$HOME#~#")
+	set -l CUR_PWD (prompt_pwd)
 
 	# user@host >
 	echo -ns (set_color -b cyan) (set_color black) " $USER@$__fish_prompt_hostname "
