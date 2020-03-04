@@ -49,7 +49,10 @@ if status --is-login
 		add_to_path ~/Library/Python/2.7/bin
 
 		# General bin directories
-		add_to_path $HOME/.bin ~/.local/bin $GOPATH/bin ~/.cargo/bin
+		add_to_path ~/.bin ~/.local/bin
+
+		# Language specific
+		add_to_path $GOPATH/bin ~/.cargo/bin ~/.npm-packages/bin
 
 		# Unset these, copying /etc/profile
 		set -e TERMCAP
