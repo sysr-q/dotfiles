@@ -1,0 +1,223 @@
+#!/usr/bin/env python3
+# -*- encoding: utf-8 -*-
+# vim: ts=4 shiftwidth=4 expandtab
+# Part of the "sysrq dotfiles experience". Available at:
+#    sysrq <chris@gibsonsec.org> https://github.com/sysr-q/dotfiles
+#
+# This is free and unencumbered software released into the public domain.
+#
+# Anyone is free to copy, modify, publish, use, compile, sell, or
+# distribute this software, either in source code form or as a compiled
+# binary, for any purpose, commercial or non-commercial, and by any
+# means.
+#
+# In jurisdictions that recognize copyright laws, the author or authors
+# of this software dedicate any and all copyright interest in the
+# software to the public domain. We make this dedication for the benefit
+# of the public at large and to the detriment of our heirs and
+# successors. We intend this dedication to be an overt act of
+# relinquishment in perpetuity of all present and future rights to this
+# software under copyright law.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+#
+# For more information, please refer to <http://unlicense.org>
+from __future__ import print_function
+
+from enum import Enum
+import argparse
+import os
+import sys
+
+try:
+    import sh as real_sh
+except ImportError:
+    print("Install `sh` (pip install sh) for my sanity and yours.")
+    sys.exit(1)
+
+
+class Prefixes(Enum):
+    ERROR = " \033[0;31m✖\033[0m"
+    SUCCESS = " \033[0;32m✔\033[0m"
+    INFO = " \033[0;34m➜\033[0m"
+    DEBUG = " \033[0;34m?\033[0m"
+    HEADER = "\033[1m{}\033[0m"
+
+
+class PlainPrefixes(Enum):
+    ERROR = "[!]"
+    SUCCESS = "[+]"
+    INFO = "[ ]"
+    DEBUG = "[?]"
+    HEADER = "-> {}"
+
+
+def error(*args, **kwargs):
+    print(Prefixes.ERROR.value, *args, **kwargs)
+
+
+def error_r():
+    print("\r" + Prefixes.ERROR.value)
+
+
+def success(*args, **kwargs):
+    print(Prefixes.SUCCESS.value, *args, **kwargs)
+
+
+def success_r():
+    print("\r" + Prefixes.SUCCESS.value)
+
+
+def info(*args, **kwargs):
+    kwargs.setdefault("nr", False)
+    kwargs.setdefault("end", "" if kwargs.pop("nr") else None)
+    print(Prefixes.INFO.value, *args, **kwargs)
+    sys.stdout.flush()
+
+
+def debug(*args, **kwargs):
+    print(Prefixes.DEBUG.value, *args, **kwargs)
+
+
+def header(*args, **kwargs):
+    kwargs.setdefault("nr", False)
+    kwargs.setdefault("end", "" if kwargs.pop("nr") else None)
+    print(Prefixes.HEADER.value.format(" ".join(args)), **kwargs)
+    sys.stdout.flush()
+
+
+# # # # # # # # # #
+
+
+def sh(args, *pargs, _always=False, **kwargs):
+    pargs = list(pargs)
+    if args.pretend and not _always:
+        print(" ".join(pargs))
+        return ""
+    command = real_sh.Command(pargs.pop(0))
+    return command(*pargs, **kwargs)
+
+
+def exists(path):
+    try:
+        os.stat(path)
+    except OSError:
+        return False
+    return True
+
+
+def find(args, path, t=None, min=1, max=1):
+    if t is not None:
+        x = ("-type", t)
+    else:
+        x = ()
+
+    for f in sh(
+        args,
+        "find",
+        path,
+        "-mindepth",
+        min,
+        "-maxdepth",
+        max,
+        "-not",
+        "-iwholename",
+        "*.git*",
+        *x,
+        _always=True
+    ):
+        yield os.path.basename(f.rstrip())
+
+
+# # # # # # # # # #
+
+
+def update(args):
+    if not exists(args.dotfiles):
+        info("Cloning dotfiles repository... ", nr=True)
+        try:
+            sh(
+                args,
+                "git",
+                "clone",
+                "--recursive",
+                "--branch",
+                args.branch,
+                args.git_url,
+                args.dotfiles,
+                _always=True,
+            )
+            success_r()
+        except real_sh.ErrorReturnCode as e:
+            error_r()
+            header("Exit code: ", nr=True)
+            print(e.exit_code)
+            if e.stdout:
+                header("STDOUT:")
+                print(e.stdout.decode())
+            if e.stderr:
+                header("STDERR:")
+                print(e.stderr.decode())
+            sys.exit(1)
+    else:
+        try:
+            rev = sh(args, "git", "rev-parse", "HEAD", _cwd=args.dotfiles, _always=True)
+        except real_sh.ErrorReturnCode as e:
+            rev = None
+        if rev:
+            info("Updating", args.dotfiles + "... ", nr=True)
+            sh(args, "git", "pull", _cwd=args.dotfiles)
+            sh(
+                args,
+                "git",
+                "submodule",
+                "update",
+                "--init",
+                "--recursive",
+                "--quiet",
+                _cwd=args.dotfiles,
+            )
+            success_r()
+        else:
+            error(args.dotfiles, "is not a git repository, can't update.")
+            sys.exit(1)
+    commit = sh(
+        args, "git", "rev-parse", "--short", "HEAD", _cwd=args.dotfiles, _always=True
+    )
+    info("Updating dotfiles successful (commit: {})".format(commit.rstrip()))
+
+
+def main():
+    prefix = os.path.expanduser("~")
+
+    p = argparse.ArgumentParser()
+    p.add_argument("-b", "--bland", action="store_true", default=False)
+    p.add_argument("-p", "--prefix", type=str, default=prefix)
+    p.add_argument("-P", "--pretend", action="store_true", default=False)
+    p.add_argument(
+        "-d", "--dotfiles", type=str, default=os.path.join(prefix, ".dotfiles"),
+    )
+    p.add_argument(
+        "-g", "--git-url", type=str, default="https://github.com/sysr-q/dotfiles.git",
+    )
+    p.add_argument("--branch", type=str, default="master")
+
+    args = p.parse_args()
+
+    if args.bland:
+        # /shrug
+        global Prefixes
+        Prefixes = PlainPrefixes
+
+    update(args)
+    # link()
+
+
+if __name__ == "__main__":
+    main()
