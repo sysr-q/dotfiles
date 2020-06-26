@@ -96,6 +96,8 @@ def header(*args, **kwargs):
 
 
 def sh(args, *pargs, _always=False, **kwargs):
+    # Variably either actually call a command or only print it, depending on
+    # the safety of the command (_always) and mode of dotfiles update.
     pargs = list(pargs)
     if args.pretend and not _always:
         print(" ".join(pargs))
@@ -112,7 +114,7 @@ def exists(path):
     return True
 
 
-def find(args, path, t=None, min=1, max=1):
+def find(args, path, t=None, mindepth=1, maxdepth=1):
     if t is not None:
         x = ("-type", t)
     else:
@@ -123,9 +125,9 @@ def find(args, path, t=None, min=1, max=1):
         "find",
         path,
         "-mindepth",
-        min,
+        mindepth,
         "-maxdepth",
-        max,
+        maxdepth,
         "-not",
         "-iwholename",
         "*.git*",
@@ -138,6 +140,24 @@ def find(args, path, t=None, min=1, max=1):
 # # # # # # # # # #
 
 
+def action(f):
+    # Globals are unnecessary when functions exist.
+    if not hasattr(action, "list"):
+        action.list = set()
+    action.list.add(f)
+    return f
+
+
+@action
+def test_print(args):
+    header("This is a test of header()")
+    error("This is a test of error()")
+    success("This is a test of success()")
+    info("This is a test of info()")
+    debug("This is a test of debug()")
+
+
+@action
 def update(args):
     if not exists(args.dotfiles):
         info("Cloning dotfiles repository... ", nr=True)
@@ -193,7 +213,48 @@ def update(args):
     info("Updating dotfiles successful (commit: {})".format(commit.rstrip()))
 
 
+@action
+def link(args):
+    info("Linking dotfiles to", args.prefix, nr=not args.pretend)
+
+    first_fail = True
+
+    dot = lambda f: [".", ""][f.startswith(".")] + f
+
+    # Link top level files
+    for f in find(args, args.dotfiles, "f"):
+        what = os.path.join(args.dotfiles, f)
+        where = os.path.join(args.prefix, dot(f))
+        try:
+            sh(args, "ln", "-fs", what, where)
+        except real_sh.ErrorReturnCode:
+            if first_fail:
+                first_fail = False
+                error_r()
+            debug("Error linking", "'" + what + "'", "to", "'" + where + "'", "failed")
+
+    # Create top level directories and symlink anything underneath
+    for d in find(args, args.dotfiles, "d"):
+        try:
+            sh(args, "mkdir", "-p", os.path.join(args.prefix, dot(d)))
+            for df in find(args, os.path.join(args.dotfiles, d)):
+                what = os.path.join(args.dotfiles, d, df)
+                where = os.path.join(args.prefix, dot(d), df)
+                sh(args, "ln", "-fs", what, where)
+        except real_sh.ErrorReturnCode:
+            if first_fail:
+                first_fail = False
+                error_r()
+            debug(
+                "Error linking", "'" + os.path.join(args.dotfiles, d) + "'", "or contents"
+            )
+
+    if first_fail:
+        success_r()
+
+
 def main():
+    actions_dict = {f.__name__: f for f in action.list}
     prefix = os.path.expanduser("~")
 
     p = argparse.ArgumentParser()
@@ -207,6 +268,9 @@ def main():
         "-g", "--git-url", type=str, default="https://github.com/sysr-q/dotfiles.git",
     )
     p.add_argument("--branch", type=str, default="master")
+    p.add_argument(
+        "-a", "--actions", nargs="+", choices=actions_dict, default=["update", "link"]
+    )
 
     args = p.parse_args()
 
@@ -215,8 +279,8 @@ def main():
         global Prefixes
         Prefixes = PlainPrefixes
 
-    update(args)
-    # link()
+    for act in args.actions:
+        actions_dict[act](args)
 
 
 if __name__ == "__main__":
