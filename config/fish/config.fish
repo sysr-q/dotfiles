@@ -44,6 +44,8 @@ if status --is-login
 
 		# python2/python3 pip (from brew)
 		# We have them in this order so newer pip binaries are picked up.
+		add_to_path ~/Library/Python/3.9/bin
+		add_to_path ~/Library/Python/3.8/bin
 		add_to_path ~/Library/Python/3.7/bin
 		add_to_path ~/Library/Python/3.6/bin
 		add_to_path ~/Library/Python/2.7/bin
