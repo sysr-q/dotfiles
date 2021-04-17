@@ -61,3 +61,6 @@
 [submodule "vim: vim-hashicorp-tools"]
 	path = vim/bundle/vim-hashicorp-tools
 	url = https://github.com/hashivim/vim-hashicorp-tools.git
+[submodule "vim: auto-pairs"]
+	path = vim/bundle/vim-auto-pairs
+	url = https://github.com/chun-yang/auto-pairs
