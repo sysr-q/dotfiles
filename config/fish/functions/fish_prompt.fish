@@ -70,7 +70,8 @@ function fish_prompt
 
 		set -l fgc blue
 		set -l bgc green
-		if test -n (__fish_git_prompt_dirty)
+		__fish_git_prompt_dirty ^/dev/null
+		if test $status -ne 0;
 			set bgc red
 		end
 
