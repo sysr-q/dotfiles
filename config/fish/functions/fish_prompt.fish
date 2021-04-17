@@ -70,7 +70,8 @@ function fish_prompt
 
 		set -l fgc blue
 		set -l bgc green
-		__fish_git_prompt_dirty ^/dev/null
+		# At some stage, test started caring about exit codes.
+		not __fish_git_prompt_dirty >/dev/null ^/dev/null
 		if test $status -ne 0;
 			set bgc red
 		end
