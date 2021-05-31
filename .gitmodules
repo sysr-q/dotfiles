@@ -64,3 +64,6 @@
 [submodule "vim: lexima"]
 	path = vim/bundle/vim-lexima
 	url = https://github.com/cohama/lexima.vim.git
+[submodule "vim: fish syntax"]
+	path = vim/bundle/vim-fish-syntax
+	url = https://github.com/khaveesh/vim-fish-syntax.git
