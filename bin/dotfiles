@@ -67,7 +67,7 @@ def error(*args, **kwargs):
 
 
 def error_r(*args):
-    print(*args, "\r" + Prefixes.ERROR.value)
+    print(*args, f"\r{Prefixes.ERROR.value}")
 
 
 def warn(*args, **kwargs):
@@ -79,7 +79,7 @@ def success(*args, **kwargs):
 
 
 def success_r(*args):
-    print(*args, "\r" + Prefixes.SUCCESS.value)
+    print(*args, f"\r{Prefixes.SUCCESS.value}")
 
 
 def info(*args, **kwargs):
@@ -220,7 +220,7 @@ def update(args):
     except real_sh.ErrorReturnCode as e:
         rev = None
     if rev:
-        info("Updating", args.dotfiles + "... ", nr=True)
+        info(f"Updating `{bold(args.dotfiles)}`... ", nr=True)
 
         old_commit = sh(
             args,
