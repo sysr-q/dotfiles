@@ -264,7 +264,7 @@ def update(args):
 
 
 def create_link_plan(args):
-    actions = []
+    tasks = []
 
     def dot_prefix(fn):
         if fn.startswith("."):
@@ -280,7 +280,7 @@ def create_link_plan(args):
             continue
         if exists(where):
             # It exists but it doesn't have a symlink from the dotfiles folder
-            actions.append(
+            tasks.append(
                 {
                     "action": "warn",
                     "args": [f"`{bold(where)}`", "exists already"],
@@ -288,7 +288,7 @@ def create_link_plan(args):
                 }
             )
             continue
-        actions.append(
+        tasks.append(
             {
                 "action": "symlink",
                 "args": [what, where],
@@ -299,7 +299,7 @@ def create_link_plan(args):
     for d in find(args, args.dotfiles, "d"):
         create_dir = os.path.join(args.base, dot_prefix(d))
         if not exists(create_dir):
-            actions.append({"action": "mkdir", "args": [create_dir], "platform": ""})
+            tasks.append({"action": "mkdir", "args": [create_dir], "platform": ""})
         # EX: .$d/$df (.config/fish, .bin/dotfiles, ...)
         for df in find(args, os.path.join(args.dotfiles, d)):
             what = os.path.join(args.dotfiles, d, df)
@@ -309,7 +309,7 @@ def create_link_plan(args):
                 continue
             if exists(where):
                 # this_is_fine.jpg
-                actions.append(
+                tasks.append(
                     {
                         "action": "warn",
                         "args": [f"`{bold(where)}`", "exists already"],
@@ -317,27 +317,28 @@ def create_link_plan(args):
                     }
                 )
                 continue
-            actions.append({"action": "symlink", "args": [what, where], "platform": ""})
+            tasks.append({"action": "symlink", "args": [what, where], "platform": ""})
 
-    return actions
+    plan = {
+        "tasks": tasks,
+        "changes": len(list(filter(lambda t: t["action"] in ("mkdir", "symlink"), tasks))),
+    }
+
+    return plan
 
 
 def run_plan_with_funcs(args, funcs):
-    tasks = create_link_plan(args)
-    for task in tasks:
+    plan = create_link_plan(args)
+    for task in plan["tasks"]:
         if task["action"] not in funcs:
             debug(f"Unknown action {task['action']} called with args: {task['args']}")
         funcs[task["action"]](task)
-
-    actioned = len(list(filter(lambda t: t["action"] in ("mkdir", "symlink"), tasks)))
-    if actioned == 0:
-        info("Nothing new to link.")
-    return actioned
+    return plan["changes"]
 
 
 @action
 def show_plan(args):
-    actioned = run_plan_with_funcs(
+    changes = run_plan_with_funcs(
         args,
         {
             "mkdir": lambda t: info(f"mkdir -p {' '.join(t['args'])}"),
@@ -346,10 +347,12 @@ def show_plan(args):
         },
     )
 
-    if actioned > 0:
+    if changes > 0:
         info(
-            f"If you're happy with {actioned} planned change{'' if actioned == 1 else 's'}, re-run as `{bold('dotfiles -a apply')}`"
+            f"If you're happy with {changes} planned change{'' if changes == 1 else 's'}, re-run as `{bold('dotfiles -a apply')}`"
         )
+    else:
+        info("No changes required.")
 
 
 @action
@@ -366,7 +369,7 @@ def apply(args):
         except real_sh.ErrorReturnCode as e:
             error(f"sh error: `{bold('ln -fs ' + ' '.join(task['args']))}")
 
-    run_plan_with_funcs(
+    changes = run_plan_with_funcs(
         args,
         {
             "mkdir": mkdir,
@@ -374,6 +377,11 @@ def apply(args):
             "warn": lambda t: warn(f"{' '.join(t['args'])}"),
         },
     )
+
+    if changes > 0:
+        info(f"{changes} change{'' if changes == 1 else 's'} made.")
+    else:
+        info("No changes made.")
 
 
 def main():
