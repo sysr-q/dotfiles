@@ -26,24 +26,5 @@
 #
 # For more information, please refer to <http://unlicense.org>
 
-function tm -a "session" -a "start_dir"
-	if test -z "$session"
-		echo >&2 "usage: tm <session> [start-directory]"
-		tmux ls
-		return 1
-	end
-
-	if test -z "$start_dir"
-		set start_dir (pwd)
-	end
-
-	if not tmux has-session -t "$session" ^/dev/null
-		tmux new-session -s "$session" -d -c "$start_dir"
-	end
-
-	if test -z "$TMUX"
-		tmux attach-session -t "$session"
-	else
-		tmux switch-client -t "$session"
-	end
+function fish_greeting
 end

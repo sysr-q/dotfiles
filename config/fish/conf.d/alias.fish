@@ -26,24 +26,29 @@
 #
 # For more information, please refer to <http://unlicense.org>
 
-function tm -a "session" -a "start_dir"
-	if test -z "$session"
-		echo >&2 "usage: tm <session> [start-directory]"
-		tmux ls
-		return 1
-	end
-
-	if test -z "$start_dir"
-		set start_dir (pwd)
-	end
-
-	if not tmux has-session -t "$session" ^/dev/null
-		tmux new-session -s "$session" -d -c "$start_dir"
-	end
-
-	if test -z "$TMUX"
-		tmux attach-session -t "$session"
+function nvim-maybe -w "nvim"
+	if command -q nvim
+		nvim $argv
 	else
-		tmux switch-client -t "$session"
+		command vim $argv
 	end
 end
+
+function bpython-maybe -w "bpython"
+	if command -q bpython
+		bpython $argv
+	else
+		/usr/bin/env python $argv
+	end
+end
+
+alias vi nvim-maybe
+alias vim nvim-maybe
+
+alias python bpython-maybe
+
+alias grep "grep --color=auto"
+alias ls "ls --color=auto --group-directories-first"
+alias ll "ls --color=auto -l"
+alias rm "rm -I"
+
