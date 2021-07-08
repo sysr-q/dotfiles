@@ -49,6 +49,9 @@ if status is-login
 	## macOS specific stuff
 	# Add gnu coreutils (from brew) for OS X.
 	add_to_path /usr/local/opt/coreutils/libexec/gnubin
+	# M1 Homebrew
+	add_to_path /opt/homebrew/bin
+	add_to_path /opt/homebrew/opt/coreutils/libexec/gnubin
 
 	# python2/python3 pip (from brew)
 	# We have them in this order so newer pip binaries are picked up.
