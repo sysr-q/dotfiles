@@ -31,7 +31,7 @@ function __git_dir
 		return 1
 	end
 
-	set -l repo_info (command git rev-parse --git-dir --is-inside-git-dir --is-bare-repository --is-inside-work-tree --short HEAD ^/dev/null)
+	set -l repo_info (command git rev-parse --git-dir --is-inside-git-dir --is-bare-repository --is-inside-work-tree --short HEAD 2>/dev/null)
 	echo "$repo_info"
 end
 
@@ -40,7 +40,7 @@ function __git_is_ahead
 		return 1
 	end
 
-	set -l ahead (command git rev-list '@{u}..' --count ^/dev/null)
+	set -l ahead (command git rev-list '@{u}..' --count 2>/dev/null)
 	echo "$ahead"
 end
 
