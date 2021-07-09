@@ -80,5 +80,6 @@ end
 
 if command -q keychain
 	set -l KEYS id_rsa id_ecdsa id_ed25519
+	set -lx SHELL $__fish_bin_dir/fish
 	keychain --eval --agents ssh --quick --quiet $KEYS | source
 end
