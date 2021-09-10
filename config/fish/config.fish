@@ -43,6 +43,13 @@ if status is-login
 	set -xg HOMEBREW_NO_ANALYTICS 1
 	set -xg GPG_TTY (tty)
 
+	# Nix
+	#  Future: :/nix/var/nix/profiles/per-user/root/channels:
+	set -xg NIX_PATH "darwin-config=$HOME/.nixpkgs/darwin-configuration.nix:$HOME/.nix-defexpr/channels"
+	set -xg NIX_SSL_CERT_FILE /etc/ssl/certs/ca-certificates.crt
+	set -xg NIX_USER_PROFILE_DIR "/nix/var/nix/profiles/per-user/$USER"
+	set -xg NIX_PROFILES "/nix/var/nix/profiles/default /run/current-system/sw $HOME/.nix-profile"
+
 	# 'null' is invisible on Solarized Dark by default.
 	set -x JQ_COLORS '1;39:0;39:0;39:0;39:0;32:1;39:1;39'
 
