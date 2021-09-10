@@ -35,6 +35,7 @@
 		MusicTagEditor5 = 1262758352;
 		Serial = 877615577;
 		Unarchiver = 425424353;
+		WireGuard = 1451685025;
   };
 
 
