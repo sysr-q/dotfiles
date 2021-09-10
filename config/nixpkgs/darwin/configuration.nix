@@ -3,24 +3,30 @@
 {
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
-  environment.systemPackages =
-    [
-      pkgs.aria2
-      pkgs.coreutils
-      pkgs.curl
-      pkgs.git
-      pkgs.htop
-      pkgs.iperf3
-      pkgs.jq
-      pkgs.keychain
-      pkgs.mosh
-      pkgs.neovim
-      pkgs.nomad
-      pkgs.tmux
-      pkgs.tree
-      pkgs.vault
-      pkgs.wget
+  environment.systemPackages = with pkgs; [
+      aria2
+      coreutils
+      curl
+      ffmpeg
+      git
+      htop
+      iperf3
+      jq
+      keychain
+      mosh
+      neovim
+      nmap
+      nomad
+      python39
+      qrencode
+      tmux
+      tree
+      vault
+      wget
     ];
+
+  # GUI apps to install some day:
+  # iterm2
 
   homebrew.enable = true;
   # homebrew.cleanup = uninstall;
