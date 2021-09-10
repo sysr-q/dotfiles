@@ -45,7 +45,7 @@ if status is-login
 
 	# Nix
 	#  Future: :/nix/var/nix/profiles/per-user/root/channels:
-	set -xg NIX_PATH "darwin-config=$HOME/.nixpkgs/darwin-configuration.nix:$HOME/.nix-defexpr/channels"
+	set -xg NIX_PATH "darwin-config=$HOME/.config/nixpkgs/darwin/configuration.nix:$HOME/.nix-defexpr/channels"
 	set -xg NIX_SSL_CERT_FILE /etc/ssl/certs/ca-certificates.crt
 	set -xg NIX_USER_PROFILE_DIR "/nix/var/nix/profiles/per-user/$USER"
 	set -xg NIX_PROFILES "/nix/var/nix/profiles/default /run/current-system/sw $HOME/.nix-profile"
