@@ -1,3 +1,4 @@
+# vim: ts=2 shiftwidth=2 expandtab
 { config, pkgs, ... }:
 
 {
@@ -13,16 +14,20 @@
       iperf3
       jq
       keychain
+      mediainfo
       mosh
       neovim
       nmap
       nomad
-      python39
       qrencode
       tmux
       tree
       vault
       wget
+
+      python39
+      python39Packages.pip
+      python39Packages.sh
     ];
 
   # GUI apps to install some day:
