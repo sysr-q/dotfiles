@@ -20,6 +20,7 @@
       nmap
       nomad
       qrencode
+      simple-http-server
       tmux
       tree
       vault
@@ -27,14 +28,15 @@
 
       (python39.withPackages(ps: with ps; [
         pip
-        RangeHTTPServer
         requests
         sh
       ]))
     ];
 
+  # TODO: neovim +python3, dmrconfig (darwin)
+
   # GUI apps to install some day:
-  # iterm2
+  # iterm2 lagrange
 
   homebrew.enable = true;
   # homebrew.cleanup = uninstall;

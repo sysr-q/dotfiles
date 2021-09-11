@@ -1,0 +1,48 @@
+tap "hashicorp/tap"
+tap "homebrew/bundle"
+tap "homebrew/cask"
+tap "homebrew/core"
+brew "aria2"
+brew "python@3.9"
+brew "pkg-config"
+brew "coreutils"
+brew "openldap"
+brew "curl"
+brew "harfbuzz"
+brew "ffmpeg"
+brew "fish"
+brew "fortune"
+brew "ghostscript"
+brew "libusb"
+brew "gnupg"
+brew "go"
+brew "htop"
+brew "id3lib"
+brew "imagemagick"
+brew "iperf3"
+brew "jq"
+brew "keychain"
+brew "mas"
+brew "media-info"
+brew "mosh"
+brew "neovim"
+brew "nmap"
+brew "qrencode"
+brew "tmux"
+brew "toilet"
+brew "tree"
+brew "vault"
+brew "wget"
+brew "wireguard-tools"
+brew "hashicorp/tap/nomad"
+cask "android-platform-tools"
+mas "Amphetamine", id: 937984704
+mas "Colibri", id: 1178295426
+mas "Cyberduck", id: 409222199
+mas "Discovery", id: 1381004916
+mas "Gestimer", id: 990588172
+mas "Music Tag Editor 5", id: 1262758352
+mas "Serial", id: 877615577
+mas "Tadam", id: 531349534
+mas "The Unarchiver", id: 425424353
+mas "WireGuard", id: 1451685025
