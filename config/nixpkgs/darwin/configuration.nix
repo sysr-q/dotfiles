@@ -25,9 +25,12 @@
       vault
       wget
 
-      python39
-      python39Packages.pip
-      python39Packages.sh
+      (python39.withPackages(ps: with ps; [
+        pip
+        RangeHTTPServer
+        requests
+        sh
+      ]))
     ];
 
   # GUI apps to install some day:
