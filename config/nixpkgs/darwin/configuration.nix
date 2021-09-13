@@ -27,7 +27,6 @@
       wget
 
       (python39.withPackages(ps: with ps; [
-        pip
         requests
         sh
       ]))
