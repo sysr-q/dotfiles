@@ -10,6 +10,7 @@
       curl
       ffmpeg
       git
+      go
       htop
       iperf3
       jq
