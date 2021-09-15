@@ -36,7 +36,7 @@
 	url = git://github.com/kien/rainbow_parentheses.vim.git
 [submodule "awesome: assault"]
 	path = config/awesome/assault
-	url = git://github.com/NuckChorris/assault.git
+	url = https://github.com/NuckChorris/assault.git
 [submodule "awesome: pulseaudio"]
 	path = config/awesome/pulse
 	url = git://gist.github.com/7018116.git
