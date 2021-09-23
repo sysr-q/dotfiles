@@ -11,6 +11,7 @@
       ffmpeg
       git
       go
+      handbrake
       htop
       iperf3
       jq

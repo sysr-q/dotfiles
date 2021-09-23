@@ -1,0 +1,17 @@
+tap "homebrew/bundle"
+tap "homebrew/cask"
+tap "homebrew/core"
+brew "go"
+brew "mas"
+brew "python@3.9"
+cask "android-platform-tools"
+mas "Amphetamine", id: 937984704
+mas "Colibri", id: 1178295426
+mas "Cyberduck", id: 409222199
+mas "Discovery", id: 1381004916
+mas "Gestimer", id: 990588172
+mas "Music Tag Editor 5", id: 1262758352
+mas "Serial", id: 877615577
+mas "Tadam", id: 531349534
+mas "The Unarchiver", id: 425424353
+mas "WireGuard", id: 1451685025
