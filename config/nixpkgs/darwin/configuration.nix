@@ -29,6 +29,7 @@
       wget
 
       (python39.withPackages(ps: with ps; [
+        internetarchive
         requests
         sh
       ]))
