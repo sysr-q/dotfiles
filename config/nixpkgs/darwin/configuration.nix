@@ -9,6 +9,7 @@
       coreutils
       curl
       ffmpeg
+      figlet
       git
       go
       handbrake
