@@ -10,6 +10,7 @@
       curl
       ffmpeg
       figlet
+      freerdp
       git
       go
       handbrake
