@@ -62,16 +62,10 @@ function fish_prompt
 
 	# > master >
 	if test -n (__git_dir)
-		if not set -q __fish_git_prompt_loaded
-			# Just so __fish_git_prompt_dirty won't throw a hissy fit.
-			set -g __fish_git_prompt_loaded 'yes'
-			__fish_git_prompt >/dev/null ^/dev/null
-		end
-
 		set -l fgc blue
 		set -l bgc green
 		# At some stage, test started caring about exit codes.
-		not __fish_git_prompt_dirty >/dev/null ^/dev/null
+		git diff-files --quiet
 		if test $status -ne 0;
 			set bgc red
 		end
