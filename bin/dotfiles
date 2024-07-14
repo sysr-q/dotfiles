@@ -143,7 +143,7 @@ def find(args, path, t=None, mindepth=1, maxdepth=1):
     else:
         x = ()
 
-    for f in sh(
+    files = sh(
         args,
         "find",
         path,
@@ -156,7 +156,9 @@ def find(args, path, t=None, mindepth=1, maxdepth=1):
         "*.git*",
         *x,
         _always=True,
-    ):
+    ).split("\n")
+
+    for f in files:
         yield os.path.basename(f.rstrip())
 
 
