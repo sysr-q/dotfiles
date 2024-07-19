@@ -54,34 +54,47 @@ function fish_prompt
 	set -l CUR_PWD (prompt_pwd)
 
 	# user@host >
-	echo -ns (set_color -b cyan) (set_color black) " $USER@$__fish_prompt_hostname "
+	if set -q __prompt_context
+		echo -ns (set_color -b cyan) (set_color black) " @$__fish_prompt_hostname "
+	else
+		echo -ns (set_color -b cyan) (set_color black) " $USER@$__fish_prompt_hostname "
+	end
+
 	echo -ns (set_color -b blue) (set_color cyan) "$SEP"
 
 	# ~/foo/bar >
 	echo -ns (set_color -b blue) (set_color white) " $CUR_PWD "
 
 	# > master >
+	set -l bgc blue
 	if test -n (__git_dir)
 		set -l fgc blue
-		set -l bgc green
+		set -l textc white
 		# At some stage, test started caring about exit codes.
 		git diff-files --quiet
 		if test $status -ne 0;
-			set bgc red
+			set bgc white
+			set textc black
+		else
+			set bgc green
 		end
 
 		set -l ahead (__git_is_ahead)
 		if test -n $ahead -a $ahead -ne 0
 			set fgc white
 			echo -ns (set_color -b $fgc) (set_color blue) "$SEP"
-			# echo -ns (set_color black) " " $ahead " "
 		end
 
 		echo -ns (set_color -b $bgc) (set_color $fgc) "$SEP"
-		echo -ns (set_color white) " " (__fish_git_prompt "%s") " "
-		echo -ns (set_color -b normal) (set_color $bgc) "$SEP "
+		echo -ns (set_color $textc) " " (__fish_git_prompt "%s") " "
+	end
+
+	if set -q __prompt_context
+		echo -ns (set_color -b red) (set_color $bgc) "$SEP "
+		echo -ns (set_color -b red) (set_color white) "$__prompt_context "
+		echo -ns (set_color -b normal) (set_color red) "$SEP "
 	else
-		echo -ns (set_color -b normal) (set_color blue) "$SEP "
+		echo -ns (set_color -b normal) (set_color $bgc) "$SEP "
 	end
 end
 
